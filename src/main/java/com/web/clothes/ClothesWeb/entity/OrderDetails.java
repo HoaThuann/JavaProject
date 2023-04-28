@@ -22,7 +22,7 @@ import lombok.Setter;
 public class OrderDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
 	@Column(nullable = false)
 	private float price;

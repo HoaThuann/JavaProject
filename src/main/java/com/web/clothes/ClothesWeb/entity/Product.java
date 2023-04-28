@@ -30,7 +30,7 @@ import lombok.Setter;
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@Column(nullable = false, unique = true, length = 20)
 	private String title;
@@ -63,6 +63,9 @@ public class Product {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
 	private Category category;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<ProductAttributeValue> attributeValues = new HashSet<>();
 	
 	@OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Cart> carts = new HashSet<>();
