@@ -3,11 +3,8 @@ package com.web.clothes.ClothesWeb.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.web.clothes.ClothesWeb.entity.User;
-
-
-
+import com.web.clothes.ClothesWeb.entity.Category;
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
-	
+public interface CategoryRepository extends JpaRepository<Category,Integer>{
+
 }
