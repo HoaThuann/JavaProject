@@ -10,10 +10,14 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UserRegisterDto {
+	
 	private String username;
 	private String password;
+	private String confirmPassword;
 	private String fullname;
 	private String address;
 	private String phone;
 	private String email;
+	private String code;
+	
 }

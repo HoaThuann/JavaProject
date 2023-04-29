@@ -6,5 +6,5 @@ import com.web.clothes.ClothesWeb.entity.User;
 
 public interface UserService {
 	public User getUser(Integer userId);
-	 public void signUp(UserRegisterDto userRequestDto);
+	void save(User user);
 }

@@ -21,8 +21,8 @@ import com.web.clothes.ClothesWeb.repository.UserRepository;
 public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
-	private RoleService roleService;
-	private static final String USER = "USER";
+//	private RoleService roleService;
+//	private static final String USER = "USER";
 
 	@Override
 	public User getUser(Integer userId) {
@@ -35,19 +35,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void signUp(UserRegisterDto userRegisterDto) {
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String encodedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
-
-		User user = new User();
-
-		user.setFullName(userRegisterDto.getFullname());
-		user.setEmail(userRegisterDto.getEmail());
-		user.setPhone(userRegisterDto.getPhone());
-		user.setAddress(userRegisterDto.getAddress());
-		user.setRole(roleService.getRoleByName(USER));
-		user.setPassword(encodedPassword);
-		
+	public void save(User user) {
 		userRepository.save(user);
 	}
+
+
+//	@Override
+//	public void signUp(UserRegisterDto userRegisterDto) {
+//		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//		String encodedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
+//
+//		User user = new User();
+//
+//		user.setFullName(userRegisterDto.getFullname());
+//		user.setEmail(userRegisterDto.getEmail());
+//		user.setPhone(userRegisterDto.getPhone());
+//		user.setAddress(userRegisterDto.getAddress());
+//		user.setRole(roleService.getRoleByName(USER));
+//		user.setPassword(encodedPassword);
+//		
+//		userRepository.save(user);
+//	}
 }
