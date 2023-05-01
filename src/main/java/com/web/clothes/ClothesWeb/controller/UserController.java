@@ -182,4 +182,9 @@ public class UserController {
 	public String hello() {
 		return "b";
 	}
+	@GetMapping("/sucess")
+	@ResponseBody
+	public String sucess() {
+		return "sucessful";
+	}
 }
