@@ -30,7 +30,7 @@ public class Role {
 	@Column(nullable = false,unique = true,length = 20)
     private String roleName;
 	
-	@OneToMany(mappedBy = "role",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "role",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 	
 }

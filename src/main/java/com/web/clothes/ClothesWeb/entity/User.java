@@ -75,6 +75,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Feedback> feedback = new HashSet<>();
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Order> orders = new HashSet<>();
 }

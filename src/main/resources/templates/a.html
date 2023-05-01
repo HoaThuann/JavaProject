@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<form th:id="login-form" th:action="@{/login1}" method="POST"
+		th:object="${loginRequestDto}">
+		<input th:id="email-input" th:field="*{email}" type="text"> <input
+			th:id="password-input" th:field="*{password}" type="text"> <input
+			th:id="login-button" type="submit" value="login">
+	</form>
+	<script>
+
+
+	const loginForm = document.getElementById('login-form');
+
+	loginForm.addEventListener('submit', async (event) => {
+	  event.preventDefault();
+
+	  const formData = new FormData(loginForm);
+	  const email = formData.get('email');
+	  const password = formData.get('password');
+
+	  const response = await fetch('/login1', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json'
+	    },
+	    body: JSON.stringify({
+	      email: email,
+	      password: password
+	    })
+	  });
+
+	  if (response.ok) {
+		  
+	    const data = await response.json();
+	    const token = data.token;
+	    const role = data.role;
+	    console.log(token)
+	    
+	    const homeResponse = await fetch('/test', {
+	        headers: {
+	          'Authorization': 'Bearer ' + token
+	        }
+	      });
+
+	      if (homeResponse.ok) {
+	        // xử lý phản hồi từ API /home
+	        if (role === 'USER') {
+    			window.location.href = "/sucess";
+			} else if (role === 'ADMIN') {
+	        window.location.href = '/test';}
+	      } else {
+	        // xử lý lỗi từ API /home
+	        alert('Đăng nhập không thành công!');
+	      }
+	  
+	  } else {
+	    alert('Đăng nhập không thành công!');
+	  }
+	  
+	});
+</script>
+</body>
+</html>

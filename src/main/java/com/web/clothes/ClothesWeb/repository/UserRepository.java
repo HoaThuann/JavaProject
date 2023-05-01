@@ -12,4 +12,5 @@ import com.web.clothes.ClothesWeb.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 	public Optional<User> findUserByUserName(String userName);
+	public Optional<User> findUserByEmail(String email);
 }
