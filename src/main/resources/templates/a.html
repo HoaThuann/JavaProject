@@ -1,72 +1,109 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
-<title>Title</title>
+<title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<form th:id="login-form" th:action="@{/login1}" method="POST"
+	<form th:id="login-form" th:action="@{/user/checkLogin}" method="POST"
 		th:object="${loginRequestDto}">
-		<input th:id="email-input" th:field="*{email}" type="text"> <input
-			th:id="password-input" th:field="*{password}" type="text"> <input
-			th:id="login-button" type="submit" value="login">
+		<input th:id="email-input" th:field="*{email}" type="text">
+		<div th:id="email-error"></div>
+		<input th:id="password-input" th:field="*{password}" type="text">
+		<div th:id="password-error"></div>
+		<input th:id="login-button" type="submit" value="login">
 	</form>
 	<script>
 
-
 	const loginForm = document.getElementById('login-form');
-
+	const emailInput = document.getElementById('email-input');
+	const passwordInput = document.getElementById('password-input');
+	const emailError =document.getElementById('email-error');
+	const passwordError =document.getElementById('password-error');
+	
+	//if user forcus input is set value error empty
+	emailInput.addEventListener("focus", function() {
+		  emailError.textContent = ""; 
+		});
+	passwordInput.addEventListener("focus", function() {
+		passwordError.textContent = ""; 
+		});
+	
 	loginForm.addEventListener('submit', async (event) => {
 	  event.preventDefault();
 
 	  const formData = new FormData(loginForm);
 	  const email = formData.get('email');
 	  const password = formData.get('password');
-
-	  const response = await fetch('/login1', {
-	    method: 'POST',
-	    headers: {
-	      'Content-Type': 'application/json'
-	    },
-	    body: JSON.stringify({
-	      email: email,
-	      password: password
-	    })
-	  });
-
-	  if (response.ok) {
-		  
-	    const data = await response.json();
-	    const token = data.token;
-	    const role = data.role;
-	    console.log(token)
-	    
-	    const homeResponse = await fetch('/test', {
-	        headers: {
-	          'Authorization': 'Bearer ' + token
-	        }
-	      });
-
-	      if (homeResponse.ok) {
-	        // xử lý phản hồi từ API /home
-	        if (role === 'USER') {
-    			window.location.href = "/sucess";
-			} else if (role === 'ADMIN') {
-	        window.location.href = '/test';}
-	      } else {
-	        // xử lý lỗi từ API /home
-	        alert('Đăng nhập không thành công!');
-	      }
 	  
-	  } else {
-	    alert('Đăng nhập không thành công!');
+	  //check username or email is empty
+	  function isEmpty(str) {
+		  return (!str || str.length === 0);
+	  }
+	  var isValid = true;
+	  function validateForm(){
+		 if (isEmpty(email)) {
+			  // Hiển thị thông báo lỗi cho người dùng
+			  emailError.textContent = 'Please enter your email!';
+			  isValid = false;
+		}
+
+		if (isEmpty(password)) {
+			  // Hiển thị thông báo lỗi cho người dùng
+			  passwordError.textContent = 'Please enter your password!';
+			  isValid = false;
+		}
+		return isValid;
 	  }
 	  
+	  //if username or email is not empty call /user/checkLogin
+		if(validateForm()){
+			const response = await fetch('/user/checkLogin', {
+			    method: 'POST',
+			    headers: {
+			      'Content-Type': 'application/json'
+			    },
+			    body: JSON.stringify({
+			      email: email,
+			      password: password
+			    })
+			  });
+			//if the authentication is successful, add token in header 
+			  if (response.ok) {
+				  
+				 const data = await response.json();
+			     const token = data.token;
+			     const role = data.role;
+			     localStorage.setItem('jwtToken', token);
+			      const homeResponse = await fetch('/user/home', {
+			        headers: {
+			          'Authorization': 'Bearer ' + token
+			        }
+			      });
+			
+			      if (homeResponse.ok) {
+			        if (role === 'USER') {
+			          window.location.href = "/user/home";
+			        } else if (role === 'ADMIN') {
+			          window.location.href = '/user/homeAdmin';
+			        }
+			      } else {
+			        alert('Log in failed!');
+			      }
+			  
+			  } else {
+			    alert("Email or password not match! Please try again!");
+			  }
+		}
 	});
+	  
+	
+	
+	
 </script>
 </body>
 </html>

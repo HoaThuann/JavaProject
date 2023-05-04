@@ -15,9 +15,11 @@ import lombok.Setter;
 @Getter
 @Builder
 public class LoginRequestDto {
-	@NotEmpty
+	@NotEmpty(message="k trống email")
 	private String email;
 
-	@NotEmpty
+	@NotEmpty(message="k trống pass")
 	private String password;
+	
+	 
 }

@@ -21,12 +21,12 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         if (authentication != null) {
             Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
             
-            if (roles.contains("ROLE_ADMIN")) {
+            if (roles.contains("ADMIN")) {
                 // Nếu đây là một quản trị viên, điều hướng về trang đăng nhập.
-                setDefaultTargetUrl("/loginForm");
+                setDefaultTargetUrl("/user/login");
             } else {
                 // Nếu đây là một người dùng bình thường, điều hướng về trang chủ.
-                setDefaultTargetUrl("/hello");
+                setDefaultTargetUrl("/user/sucess");
             }
         }
         

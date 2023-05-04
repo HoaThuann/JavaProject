@@ -25,7 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	private final UserServiceImpl userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private static final String[] NO_LOG_IN = {
-            "/login1",
+            "/user/login",
+            "/user/checkLogin",
+            "/user/sucess",
             "/user/signUp"
     };
 
@@ -57,23 +59,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.csrf().disable().cors().and()
                 .authorizeRequests()
                 .antMatchers(NO_LOG_IN).permitAll()
-                .antMatchers("/hello").permitAll()
-                .antMatchers("/loginForm").permitAll()
-                .antMatchers("/login1").permitAll()
-                .antMatchers("/loginView").permitAll()
-                .antMatchers("/passwordReset/token").permitAll()
-                .antMatchers("/passwordReset/reset").permitAll()
-                .antMatchers("/role/list","/admin/blockUser").hasAuthority("ADMIN")
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/loginForm")
+                .loginPage("/user/login")
                 .permitAll()
                 .and()
                 .logout()
-                .logoutUrl("/logout") // Url của trang logout.
+                .logoutUrl("/user/logout") // Url của trang logout.
                 .logoutSuccessHandler(new CustomLogoutSuccessHandler()) // Đăng ký LogoutSuccessHandler tùy chỉnh.
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
