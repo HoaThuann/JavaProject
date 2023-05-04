@@ -142,10 +142,12 @@ public class UserController {
 		}
 		// Authenticate from username and password.
 		Authentication authentication = null;
+		
 		try {
 			authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
 		} catch (BadCredentialsException ex) {
+			
 			return ResponseEntity.badRequest().body(authenticationResponseDto);
 //            throw new UserNotValidException(HttpStatus.BAD_REQUEST.value(),"UserName or Password is not valid");
 		}
