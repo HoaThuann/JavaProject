@@ -26,16 +26,16 @@
 	const passwordError =document.getElementById('password-error');
 	
 	//if user forcus input is set value error empty
-	emailInput.addEventListener("focus", function() {
+	
+	
+	loginForm.addEventListener('submit', async (event) => {
+	  event.preventDefault();
+	  emailInput.addEventListener("focus", function() {
 		  emailError.textContent = ""; 
 		});
 	passwordInput.addEventListener("focus", function() {
 		passwordError.textContent = ""; 
 		});
-	
-	loginForm.addEventListener('submit', async (event) => {
-	  event.preventDefault();
-
 	  const formData = new FormData(loginForm);
 	  const email = formData.get('email');
 	  const password = formData.get('password');
@@ -78,12 +78,18 @@
 				 const data = await response.json();
 			     const token = data.token;
 			     const role = data.role;
-			     localStorage.setItem('jwtToken', token);
+			     
 			      const homeResponse = await fetch('/user/home', {
 			        headers: {
 			          'Authorization': 'Bearer ' + token
 			        }
 			      });
+			      
+			      const homeAdminResponse = await fetch('/user/homeAdmin', {
+				        headers: {
+				          'Authorization': 'Bearer ' + token
+				        }
+				      });
 			
 			      if (homeResponse.ok) {
 			        if (role === 'USER') {

@@ -118,10 +118,10 @@ public class UserController {
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
 		if (roles.contains("ADMIN")) {
 			// Nếu đây là một quản trị viên, điều hướng về trang đăng nhập.
-			return "redirect:/user/home";
+			return "redirect:/user/homeAdmin";
 		} else {
 			// Nếu đây là một người dùng bình thường, điều hướng về trang chủ.
-			return "redirect:/user/homeAdmin";
+			return "redirect:/user/home";
 		}
 
 	}

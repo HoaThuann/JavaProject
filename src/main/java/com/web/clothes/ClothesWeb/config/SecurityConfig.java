@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	private final UserServiceImpl userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private static final String[] NO_LOG_IN = {
-            "/user/login",
+//            "/user/login",
             "/user/checkLogin",
             "/user/sucess",
             "/user/signUp"
@@ -78,4 +78,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
+    
 }
