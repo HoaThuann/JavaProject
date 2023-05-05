@@ -71,7 +71,7 @@ public class UserController {
 	
 	private RoleService roleService;
 
-	private String token;
+	
 
 	@PostMapping("/register/{check}")
 	public String save(@Validated UserRegisterDto entity, @PathVariable("check") String check,
@@ -109,13 +109,13 @@ public class UserController {
 	@RequestMapping(value = "/login")
 	public String authenticateUser(Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(SecurityContextHolder.getContext().getAuthentication());
+
 		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
 			model.addAttribute("loginRequestDto", new LoginRequestDto());
 			return "users/login";
 		}
 		Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-		System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
+		
 		if (roles.contains("ADMIN")) {
 			// Nếu đây là một quản trị viên, điều hướng về trang đăng nhập.
 			return "redirect:/user/homeAdmin";
@@ -135,9 +135,8 @@ public class UserController {
 		AuthenticationResponseDto authenticationResponseDto = new AuthenticationResponseDto();
 		
 		Optional<User> user = userRepository.findUserByEmail(loginRequestDto.getEmail());
-		System.out.println(1);
+		
 		if (!user.isPresent()) {
-			System.out.println(1);
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResponseDto);
 		}
 		// Authenticate from username and password.
@@ -149,19 +148,19 @@ public class UserController {
 		} catch (BadCredentialsException ex) {
 			
 			return ResponseEntity.badRequest().body(authenticationResponseDto);
-//            throw new UserNotValidException(HttpStatus.BAD_REQUEST.value(),"UserName or Password is not valid");
+
 		}
 
 		// If no exception occurs, the information is valid
 		// Set authentication information to Security Context
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
+		
 		//generate token
-		token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+		String token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
 
 		// get role
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		System.out.println(token);
+		
 		// check if user is user or admin
 		String role = null;
 		for (GrantedAuthority authority : authorities) {

@@ -25,10 +25,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	private final UserServiceImpl userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private static final String[] NO_LOG_IN = {
-//            "/user/login",
             "/user/checkLogin",
             "/user/sucess",
-            "/user/signUp"
+            "/user/signUp",
+            "/images/**",
+            "/css/**",
+            "/js/**"
     };
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -61,7 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers(NO_LOG_IN).permitAll()
                 .and()
                 .authorizeRequests()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/user/login")
