@@ -112,7 +112,7 @@ public class UserController {
 		System.out.println(SecurityContextHolder.getContext().getAuthentication());
 		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
 			model.addAttribute("loginRequestDto", new LoginRequestDto());
-			return "a";
+			return "users/login";
 		}
 		Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
