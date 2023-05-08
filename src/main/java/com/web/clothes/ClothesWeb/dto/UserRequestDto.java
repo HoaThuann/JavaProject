@@ -23,6 +23,9 @@ public class UserRequestDto {
 	@Size(min = 6, max = 30,message="Password cannot be empty and must be between 6 and 30 characters long")
 	private String password;
 	
+	
+	private String confirmPassword;
+	
 	@Size(max = 70,message="Full name must not exceed 70 characters")
 	private String fullname;
 	

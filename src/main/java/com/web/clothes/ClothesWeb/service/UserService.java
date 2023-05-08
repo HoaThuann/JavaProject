@@ -11,6 +11,8 @@ public interface UserService {
 	void save(User user);
 	public Optional<User> findUserByEmail(String email );
 	public Optional<User> findUserByPhone(String phone );
+	public Optional<User> findUserByUsername(String username );
+	
 
 	
 }

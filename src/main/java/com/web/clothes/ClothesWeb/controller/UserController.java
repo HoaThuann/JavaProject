@@ -96,19 +96,31 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/checkRegister")
-	public String registerUser( Model model,@ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,BindingResult bindingResult) {
+	public String registerUser(Model model, @ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,
+			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			System.out.println(1);
-	        return "users/register";
-	    }
-		Optional<User> UserByEmail = userService.findUserByEmail(userRequestDto.getEmail());
-		Optional<User> UserByPhone = userService.findUserByEmail(userRequestDto.getEmail());
-		Optional<Role> role = roleService.getRoleByName(USER);
-		if (UserByEmail.isPresent()) {
-			System.out.println("email đã tồn tại");
+			
+			return "users/register";
 		}
-		if (UserByPhone.isPresent()) {
-			System.out.println("phone đã tồn tại");
+		Optional<User> UserByEmail = userService.findUserByEmail(userRequestDto.getEmail());
+		Optional<User> UserByPhone = userService.findUserByPhone(userRequestDto.getPhone());
+		Optional<User> UserByUserName = userService.findUserByUsername(userRequestDto.getUsername());
+		Optional<Role> role = roleService.getRoleByName(USER);
+		
+		if (UserByEmail.isPresent() || UserByPhone.isPresent() || UserByUserName.isPresent() ||  !userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
+			if (UserByEmail.isPresent()) {
+				model.addAttribute("emailDuplicate", "Email already exists! Please enter a new one");
+			}
+			if (UserByPhone.isPresent()) {
+				model.addAttribute("phoneDuplicate", "Phone already exists! Please enter a new one");
+			}
+			if (UserByUserName.isPresent()) {
+				model.addAttribute("usernameDuplicate", "Username already exists! Please enter a new one");
+			}
+			if(!userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
+				model.addAttribute("notMatchPass", "Passwords do not match");
+			}
+			return "users/register";
 		}
 
 		String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
@@ -117,25 +129,24 @@ public class UserController {
 		User user = mapper.userRquestDtoMapToUser(userRequestDto);
 		user.setRole(role.get());
 		userService.save(user);
-		
-		
+
 		ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
 		confirmationTokenService.save(confirmationToken);
 		MailInfoDto mailInfoDto = new MailInfoDto(user.getEmail(), "Puu-Verify Your Account",
 				" Thank you for signing up for our service. To ensure the security of your account, please verify your email address by clicking on the link below:"
-						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken() );
+						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken());
 
 		mailerService.send(mailInfoDto);
 		model.addAttribute("email", mailInfoDto.getTo());
-		return "successfulRegisteration";
+		return "users/successfulRegisteration";
 	}
-	
+
 	@PostMapping(value = "/resendMail")
 	public String sendMailVerifyAccount(@RequestParam("email") String email, Model model) {
-		
+
 		Optional<User> user = userService.findUserByEmail(email);
-		
+
 		ConfirmationToken confirmationToken = new ConfirmationToken(user.get());
 
 		confirmationTokenService.save(confirmationToken);
@@ -145,37 +156,35 @@ public class UserController {
 
 		mailerService.send(mailInfoDto);
 		model.addAttribute("email", mailInfoDto.getTo());
-		return "successfulRegisteration";
+		return "users/successfulRegisteration";
 	}
-	
-	
+
 	@RequestMapping(value = "/confirm-account", method = { RequestMethod.GET, RequestMethod.POST })
 	public String confirmUserAccount(Model model, @RequestParam("token") String confirmationToken) {
 		Optional<ConfirmationToken> token = confirmationTokenService.getConfirmationTokenByToken(confirmationToken);
-		
-		//if token is not valid
-		if(!token.isPresent()) {
+
+		// if token is not valid
+		if (!token.isPresent()) {
 			model.addAttribute("message", "The link is invalid or broken!");
-			return "verifyTokenError";
+			return "users/verifyTokenError";
 		}
-		//if token is valid but expiryDate
-		
+		// if token is valid but expiryDate
 
 		if (token.isPresent()) {
-			
-			if(token.get().getExpiryDate().isBefore(LocalDateTime.now())) {
+
+			if (token.get().getExpiryDate().isBefore(LocalDateTime.now())) {
 				model.addAttribute("message", "The link is invalid or broken!");
-				return "verifyTokenError";
+				return "users/verifyTokenError";
 			}
 			Optional<User> user = userService.findUserByEmail(token.get().getUser().getEmail());
 			user.get().setActive(true);
 			userService.save(user.get());
-			return "accountVerified";
+			return "users/accountVerified";
 		} else {
 			model.addAttribute("message", "The link is invalid or broken!");
-			return "verifyTokenError";
+			return "users/verifyTokenError";
 		}
-		
+
 	}
 
 	@GetMapping(value = "/login")
