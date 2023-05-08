@@ -1,14 +1,17 @@
 package com.web.clothes.ClothesWeb.controller;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,23 +28,36 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.web.clothes.ClothesWeb.dto.AuthenticationResponseDto;
 import com.web.clothes.ClothesWeb.dto.LoginRequestDto;
-import com.web.clothes.ClothesWeb.dto.UserRegisterDto;
+import com.web.clothes.ClothesWeb.dto.MailInfoDto;
+import com.web.clothes.ClothesWeb.dto.UserRequestDto;
+import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
+import com.web.clothes.ClothesWeb.entity.ConfirmationToken;
+import com.web.clothes.ClothesWeb.entity.Role;
 import com.web.clothes.ClothesWeb.entity.User;
 import com.web.clothes.ClothesWeb.jwt.CustomUserDetails;
 import com.web.clothes.ClothesWeb.jwt.JwtTokenProvider;
+import com.web.clothes.ClothesWeb.repository.ConfirmationTokenRepository;
 import com.web.clothes.ClothesWeb.repository.UserRepository;
+import com.web.clothes.ClothesWeb.service.ConfirmationTokenService;
 import com.web.clothes.ClothesWeb.service.MailerSericeImpl;
+import com.web.clothes.ClothesWeb.service.MailerService;
 import com.web.clothes.ClothesWeb.service.RoleService;
 import com.web.clothes.ClothesWeb.service.SessionService;
 import com.web.clothes.ClothesWeb.service.UserService;
+import com.web.clothes.ClothesWeb.service.UserServiceImpl;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -50,63 +66,119 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(value="/user")
+@RequestMapping(value = "/user")
 public class UserController {
-	
+
 	private final UserService userService;
-	
-	private final SessionService sessionService;
-	
-	private final MailerSericeImpl mailerSericeImpl;
-	
-	private PasswordEncoder passwordEncoder;
-	
+
+//	private final SessionService sessionService;
+
+	private final MailerService mailerService;
+
+	private final PasswordEncoder passwordEncoder;
+
 	private final UserRepository userRepository;
-	
+	private final ConfirmationTokenService confirmationTokenService;
+
 	private final AuthenticationManager authenticationManager;
 
 	private final JwtTokenProvider tokenProvider;
 
 	private static final String USER = "USER";
-	
-	private RoleService roleService;
 
-	
+	private final RoleService roleService;
+	private final Mapper mapper;
 
-	@PostMapping("/register/{check}")
-	public String save(@Validated UserRegisterDto entity, @PathVariable("check") String check,
-			BindingResult bindingResult) {
-
-		if (check.equals("mailSender")) {
-			int code = (int) Math.floor(((Math.random() * 899999) + 100000));
-			sessionService.set("code", code);
-			mailerSericeImpl.queue(entity.getEmail(), "Xac nhan Email!!", "Ma xac nhan cua ban la: " + code);
-		}
-
-		if (bindingResult.hasErrors()) {
-
-		} else {
-			if (entity.getCode().equals(sessionService.get("code").toString()) == false) {
-				bindingResult.rejectValue("code", "Sai ma xac nhan!!");
-			} else {
-				User user = new User();
-				String password = passwordEncoder.encode(entity.getPassword());
-
-				user.setFullName(entity.getFullname());
-				user.setEmail(entity.getEmail());
-				user.setPhone(entity.getPhone());
-				user.setAddress(entity.getAddress());
-				user.setRole(roleService.getRoleByName(USER));
-				user.setPassword(password);
-
-				userService.save(user);
-			}
-		}
-
-		return "/register";
+	@GetMapping(value = "/register")
+	public String displayRegistration(Model model) {
+		model.addAttribute("userRequestDto", new UserRequestDto());
+		return "register";
 	}
 
-	@RequestMapping(value = "/login")
+	@PostMapping(value = "/checkRegister")
+	public String registerUser( Model model,@ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			System.out.println(1);
+	        return "register";
+	    }
+		Optional<User> UserByEmail = userService.findUserByEmail(userRequestDto.getEmail());
+		Optional<User> UserByPhone = userService.findUserByEmail(userRequestDto.getEmail());
+		Optional<Role> role = roleService.getRoleByName(USER);
+		if (UserByEmail.isPresent()) {
+			System.out.println("email đã tồn tại");
+		}
+		if (UserByPhone.isPresent()) {
+			System.out.println("phone đã tồn tại");
+		}
+
+		String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
+		userRequestDto.setPassword(encodedPassword);
+
+		User user = mapper.userRquestDtoMapToUser(userRequestDto);
+		user.setRole(role.get());
+		userService.save(user);
+		
+		
+		ConfirmationToken confirmationToken = new ConfirmationToken(user);
+
+		confirmationTokenService.save(confirmationToken);
+		MailInfoDto mailInfoDto = new MailInfoDto(user.getEmail(), "Puu-Verify Your Account",
+				" Thank you for signing up for our service. To ensure the security of your account, please verify your email address by clicking on the link below:"
+						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken() );
+
+		mailerService.send(mailInfoDto);
+		model.addAttribute("email", mailInfoDto.getTo());
+		return "successfulRegisteration";
+	}
+	
+	@PostMapping(value = "/resendMail")
+	public String sendMailVerifyAccount(@RequestParam("email") String email, Model model) {
+		
+		Optional<User> user = userService.findUserByEmail(email);
+		
+		ConfirmationToken confirmationToken = new ConfirmationToken(user.get());
+
+		confirmationTokenService.save(confirmationToken);
+		MailInfoDto mailInfoDto = new MailInfoDto(user.get().getEmail(), "Puu-Verify Your Account",
+				" Thank you for signing up for our service. To ensure the security of your account, please verify your email address by clicking on the link below:"
+						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken());
+
+		mailerService.send(mailInfoDto);
+		model.addAttribute("email", mailInfoDto.getTo());
+		return "successfulRegisteration";
+	}
+	
+	
+	@RequestMapping(value = "/confirm-account", method = { RequestMethod.GET, RequestMethod.POST })
+	public String confirmUserAccount(Model model, @RequestParam("token") String confirmationToken) {
+		Optional<ConfirmationToken> token = confirmationTokenService.getConfirmationTokenByToken(confirmationToken);
+		
+		//if token is not valid
+		if(!token.isPresent()) {
+			model.addAttribute("message", "The link is invalid or broken!");
+			return "verifyTokenError";
+		}
+		//if token is valid but expiryDate
+		
+
+		if (token.isPresent()) {
+			
+			if(token.get().getExpiryDate().isBefore(LocalDateTime.now())) {
+				model.addAttribute("message", "The link is invalid or broken!");
+				return "verifyTokenError";
+			}
+			Optional<User> user = userService.findUserByEmail(token.get().getUser().getEmail());
+			user.get().setActive(true);
+			userService.save(user.get());
+			return "accountVerified";
+		} else {
+			model.addAttribute("message", "The link is invalid or broken!");
+			return "verifyTokenError";
+		}
+		
+	}
+
+	@GetMapping(value = "/login")
 	public String authenticateUser(Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -115,7 +187,7 @@ public class UserController {
 			return "users/login";
 		}
 		Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-		
+
 		if (roles.contains("ADMIN")) {
 			// Nếu đây là một quản trị viên, điều hướng về trang đăng nhập.
 			return "redirect:/user/homeAdmin";
@@ -126,27 +198,33 @@ public class UserController {
 
 	}
 
-
 	@PostMapping(value = "/checkLogin")
 	@ResponseBody
-	public ResponseEntity<?> authenticateUser1(@Valid @RequestBody LoginRequestDto loginRequestDto, BindingResult bindingResult,
-			Model model) {
-		
+	public ResponseEntity<?> authenticateUser1(@Valid @RequestBody LoginRequestDto loginRequestDto,
+			BindingResult bindingResult, Model model) {
+
 		AuthenticationResponseDto authenticationResponseDto = new AuthenticationResponseDto();
-		
+
 		Optional<User> user = userRepository.findUserByEmail(loginRequestDto.getEmail());
-		
+
 		if (!user.isPresent()) {
+			authenticationResponseDto.setMessage("The account with email is not exist, please check again");
+			return ResponseEntity.badRequest().body(authenticationResponseDto);
+		}
+
+		if (user.isPresent() && !user.get().isActive()) {
+			authenticationResponseDto.setMessage(
+					"The account has not been verified, please check your email to verify your account before logging in");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResponseDto);
 		}
 		// Authenticate from username and password.
 		Authentication authentication = null;
-		
+
 		try {
 			authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
 		} catch (BadCredentialsException ex) {
-			
+			authenticationResponseDto.setMessage("The account or password is incorrect, please check again");
 			return ResponseEntity.badRequest().body(authenticationResponseDto);
 
 		}
@@ -154,13 +232,13 @@ public class UserController {
 		// If no exception occurs, the information is valid
 		// Set authentication information to Security Context
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		//generate token
+
+		// generate token
 		String token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
 
 		// get role
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		
+
 		// check if user is user or admin
 		String role = null;
 		for (GrantedAuthority authority : authorities) {
@@ -177,6 +255,7 @@ public class UserController {
 
 		return ResponseEntity.ok(authenticationResponseDto);
 	}
+
 	@GetMapping("/home")
 	@ResponseBody
 	public String test() {

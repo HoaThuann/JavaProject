@@ -28,6 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             "/user/checkLogin",
             "/user/sucess",
             "/user/signUp",
+            "/user/register",
+            "/user/checkRegister",
+            "/user/confirm-account/**",
+            "/user/resendMail",
             "/images/**",
             "/css/**",
             "/js/**"

@@ -10,15 +10,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class MailInfoDto {
-	String from;
 	String to;
 	String subject;
 	String body;
-	
-	public MailInfoDto(String to, String subject, String body) {
-//		this.from = "Shop";
-		this.to = to;
-		this.subject = subject;
-		this.body = body;
-	}
+
 }

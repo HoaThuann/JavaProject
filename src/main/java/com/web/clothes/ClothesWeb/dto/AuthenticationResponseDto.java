@@ -14,4 +14,6 @@ public class AuthenticationResponseDto {
 	
 	private String role;
 
+	private String message;
+
 }

@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.web.clothes.ClothesWeb.dto.UserRequestDto;
 import com.web.clothes.ClothesWeb.entity.User;
 import com.web.clothes.ClothesWeb.exception.UserNotFoundException;
 import com.web.clothes.ClothesWeb.jwt.CustomUserDetails;
@@ -44,27 +45,22 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Optional<User> user = userRepository.findUserByEmail(email);
-		if (user.isEmpty()) {
-			throw new UsernameNotFoundException("not found user name");
-		}
 		return new CustomUserDetails(user.get());
 	}
 
+	@Override
+	public Optional<User> findUserByEmail(String email) {
+		Optional<User> user = userRepository.findUserByEmail(email);
+		return user;
+	}
 
-//	@Override
-//	public void signUp(UserRegisterDto userRegisterDto) {
-//		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//		String encodedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
-//
-//		User user = new User();
-//
-//		user.setFullName(userRegisterDto.getFullname());
-//		user.setEmail(userRegisterDto.getEmail());
-//		user.setPhone(userRegisterDto.getPhone());
-//		user.setAddress(userRegisterDto.getAddress());
-//		user.setRole(roleService.getRoleByName(USER));
-//		user.setPassword(encodedPassword);
-//		
-//		userRepository.save(user);
-//	}
+	@Override
+	public Optional<User> findUserByPhone(String phone) {
+		Optional<User> user = userRepository.findUserByEmail(phone);
+		return user;
+	}
+
+	
+
+
 }

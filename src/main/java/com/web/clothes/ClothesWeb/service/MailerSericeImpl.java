@@ -24,37 +24,10 @@ public class MailerSericeImpl implements MailerService{
 		msg.setTo(mail.getTo());
 		msg.setSubject(mail.getSubject());
 		msg.setText(mail.getBody());
-		
+		System.out.println("vao send cua MailerSericeImpl");
 		javaMailSender.send(msg);
 	}
 
-	@Override
-	public void send(String to, String subject, String body) {
-		this.send(new MailInfoDto(to, subject, body));
-		
-	}
 
-	@Override
-	public void queue(MailInfoDto mail) {
-		list.add(mail);
-	}
-
-	@Override
-	public void queue(String to, String subject, String body) {
-		queue(new MailInfoDto(to, subject, body));
-		
-	}
-	
-	@Scheduled(fixedDelay = 1000)
-	public void run() {
-		while(!list.isEmpty()) {
-			MailInfoDto mail = list.remove(0);
-			try {
-				this.send(mail);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 }

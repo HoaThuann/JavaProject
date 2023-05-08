@@ -132,13 +132,13 @@
 			      password: password
 			    })
 			  });
+			
 			//if the authentication is successful, add token in header 
 			  if (response.ok) {
-				  
 				 const data = await response.json();
 			     const token = data.token;
 			     const role = data.role;
-			     
+			    
 			      const homeResponse = await fetch('/user/home', {
 			        headers: {
 			          'Authorization': 'Bearer ' + token
@@ -162,7 +162,10 @@
 			      }
 			  
 			  } else {
-			    alert("Email or password not match! Please try again!");
+				  
+				const data = await response.json();
+				const message=data.message;
+			    alert(message);
 			  }
 		}
 	});
