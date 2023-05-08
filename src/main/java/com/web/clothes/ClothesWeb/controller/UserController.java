@@ -92,14 +92,14 @@ public class UserController {
 	@GetMapping(value = "/register")
 	public String displayRegistration(Model model) {
 		model.addAttribute("userRequestDto", new UserRequestDto());
-		return "register";
+		return "users/register";
 	}
 
 	@PostMapping(value = "/checkRegister")
 	public String registerUser( Model model,@ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			System.out.println(1);
-	        return "register";
+	        return "users/register";
 	    }
 		Optional<User> UserByEmail = userService.findUserByEmail(userRequestDto.getEmail());
 		Optional<User> UserByPhone = userService.findUserByEmail(userRequestDto.getEmail());

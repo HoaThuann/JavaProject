@@ -86,15 +86,16 @@
 	
 	//if user forcus input is set value error empty
 	
-	
-	loginForm.addEventListener('submit', async (event) => {
-	  event.preventDefault();
-	  emailInput.addEventListener("focus", function() {
+	emailInput.addEventListener("focus", function() {
 		  emailError.textContent = ""; 
 		});
 	passwordInput.addEventListener("focus", function() {
 		passwordError.textContent = ""; 
 		});
+	
+	loginForm.addEventListener('submit', async (event) => {
+	  event.preventDefault();
+	  
 	  const formData = new FormData(loginForm);
 	  const email = formData.get('email');
 	  const password = formData.get('password');

@@ -34,7 +34,7 @@ public class UserRequestDto {
 	private String phone;
 	
 	
-	@Size(max = 100,message="Email cannot be empty and must not exceed 100 characters")
+	@Size(min=1,max = 100,message="Email cannot be empty and must not exceed 100 characters")
 	@Email(message="Email should be valid")
 	private String email;
 	
