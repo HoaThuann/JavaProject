@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.text.html.Option;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +75,12 @@ public class UserController {
 //	private final SessionService sessionService;
 
 	private final MailerService mailerService;
+	private final ConfirmationTokenService confirmationTokenService;
 
 	private final PasswordEncoder passwordEncoder;
 
 	private final UserRepository userRepository;
-	private final ConfirmationTokenService confirmationTokenService;
+	
 
 	private final AuthenticationManager authenticationManager;
 
@@ -94,7 +96,7 @@ public class UserController {
 		model.addAttribute("userRequestDto", new UserRequestDto());
 		return "users/register";
 	}
-
+	@Transactional
 	@PostMapping(value = "/checkRegister")
 	public String registerUser(Model model, @ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,
 			BindingResult bindingResult) {
@@ -130,15 +132,9 @@ public class UserController {
 		user.setRole(role.get());
 		userService.save(user);
 
-		ConfirmationToken confirmationToken = new ConfirmationToken(user);
-
-		confirmationTokenService.save(confirmationToken);
-		MailInfoDto mailInfoDto = new MailInfoDto(user.getEmail(), "Puu-Verify Your Account",
-				" Thank you for signing up for our service. To ensure the security of your account, please verify your email address by clicking on the link below:"
-						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken());
-
-		mailerService.send(mailInfoDto);
-		model.addAttribute("email", mailInfoDto.getTo());
+		mailerService.sendEmailToConfirmAccount(user);
+		
+		model.addAttribute("email", user.getEmail());
 		return "users/successfulRegisteration";
 	}
 
@@ -147,15 +143,8 @@ public class UserController {
 
 		Optional<User> user = userService.findUserByEmail(email);
 
-		ConfirmationToken confirmationToken = new ConfirmationToken(user.get());
-
-		confirmationTokenService.save(confirmationToken);
-		MailInfoDto mailInfoDto = new MailInfoDto(user.get().getEmail(), "Puu-Verify Your Account",
-				" Thank you for signing up for our service. To ensure the security of your account, please verify your email address by clicking on the link below:"
-						+ "http://localhost:8080/user/confirm-account?token=" + confirmationToken.getToken());
-
-		mailerService.send(mailInfoDto);
-		model.addAttribute("email", mailInfoDto.getTo());
+		mailerService.sendEmailToConfirmAccount(user.get());
+		model.addAttribute("email",user.get().getEmail());
 		return "users/successfulRegisteration";
 	}
 
