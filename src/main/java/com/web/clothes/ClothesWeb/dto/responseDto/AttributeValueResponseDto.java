@@ -1,4 +1,4 @@
-package com.web.clothes.ClothesWeb.dto;
+package com.web.clothes.ClothesWeb.dto.responseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,11 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class AuthenticationResponseDto {
-	private String token;
-	
-	private String role;
-
-	private String message;
-
+public class AttributeValueResponseDto {
+	private Integer id;
+	private String name;
 }

@@ -1,4 +1,4 @@
-package com.web.clothes.ClothesWeb.dto;
+package com.web.clothes.ClothesWeb.dto.requestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.web.clothes.ClothesWeb.dto;
+package com.web.clothes.ClothesWeb.dto.requestDto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

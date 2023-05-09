@@ -1,5 +1,10 @@
 package com.web.clothes.ClothesWeb.service;
 
-public interface AttributeService {
+import java.util.Optional;
 
+import com.web.clothes.ClothesWeb.entity.Attribute;
+
+
+public interface AttributeService {
+	public Optional<Attribute> getAttribute(Integer attributeId);
 }

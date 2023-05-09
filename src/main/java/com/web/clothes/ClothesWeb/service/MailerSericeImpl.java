@@ -13,7 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.web.clothes.ClothesWeb.dto.MailInfoDto;
+import com.web.clothes.ClothesWeb.dto.requestDto.MailInfoDto;
 import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
 import com.web.clothes.ClothesWeb.entity.ConfirmationToken;
 import com.web.clothes.ClothesWeb.entity.User;
