@@ -3,7 +3,6 @@ package com.web.clothes.ClothesWeb.service;
 
 import java.util.Optional;
 
-import com.web.clothes.ClothesWeb.dto.UserRequestDto;
 import com.web.clothes.ClothesWeb.entity.User;
 
 public interface UserService {

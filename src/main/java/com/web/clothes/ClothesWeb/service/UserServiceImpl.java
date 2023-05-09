@@ -7,25 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import org.springframework.stereotype.Service;
 
-import com.web.clothes.ClothesWeb.dto.UserRequestDto;
+
 import com.web.clothes.ClothesWeb.entity.User;
 import com.web.clothes.ClothesWeb.exception.UserNotFoundException;
 import com.web.clothes.ClothesWeb.jwt.CustomUserDetails;
-//import com.web.clothes.ClothesWeb.jwt.CustomUserDetails;
+
 import com.web.clothes.ClothesWeb.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService,UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
-//	private RoleService roleService;
-//	private static final String USER = "USER";
 
 	@Override
 	public User getUser(Integer userId) {

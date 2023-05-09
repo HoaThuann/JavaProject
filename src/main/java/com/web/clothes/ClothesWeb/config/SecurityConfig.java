@@ -34,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             "/user/resendMail",
             "/images/**",
             "/css/**",
-            "/js/**"
+            "/js/**",
+            "/attributeValue/list/**"
     };
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

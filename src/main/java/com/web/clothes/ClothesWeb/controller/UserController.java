@@ -5,14 +5,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,43 +22,31 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.web.clothes.ClothesWeb.dto.AuthenticationResponseDto;
-import com.web.clothes.ClothesWeb.dto.LoginRequestDto;
-import com.web.clothes.ClothesWeb.dto.MailInfoDto;
-import com.web.clothes.ClothesWeb.dto.UserRequestDto;
+
+import com.web.clothes.ClothesWeb.dto.responseDto.AuthenticationResponseDto;
+import com.web.clothes.ClothesWeb.dto.requestDto.LoginRequestDto;
+import com.web.clothes.ClothesWeb.dto.requestDto.UserRequestDto;
 import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
 import com.web.clothes.ClothesWeb.entity.ConfirmationToken;
 import com.web.clothes.ClothesWeb.entity.Role;
 import com.web.clothes.ClothesWeb.entity.User;
 import com.web.clothes.ClothesWeb.jwt.CustomUserDetails;
 import com.web.clothes.ClothesWeb.jwt.JwtTokenProvider;
-import com.web.clothes.ClothesWeb.repository.ConfirmationTokenRepository;
 import com.web.clothes.ClothesWeb.repository.UserRepository;
 import com.web.clothes.ClothesWeb.service.ConfirmationTokenService;
-import com.web.clothes.ClothesWeb.service.MailerSericeImpl;
 import com.web.clothes.ClothesWeb.service.MailerService;
 import com.web.clothes.ClothesWeb.service.RoleService;
-import com.web.clothes.ClothesWeb.service.SessionService;
 import com.web.clothes.ClothesWeb.service.UserService;
-import com.web.clothes.ClothesWeb.service.UserServiceImpl;
 
-import java.util.Map;
-import java.util.HashMap;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,16 +57,14 @@ public class UserController {
 
 	private final UserService userService;
 
-//	private final SessionService sessionService;
-
 	private final MailerService mailerService;
+	
 	private final ConfirmationTokenService confirmationTokenService;
 
 	private final PasswordEncoder passwordEncoder;
 
 	private final UserRepository userRepository;
 	
-
 	private final AuthenticationManager authenticationManager;
 
 	private final JwtTokenProvider tokenProvider;
@@ -89,6 +72,7 @@ public class UserController {
 	private static final String USER = "USER";
 
 	private final RoleService roleService;
+	
 	private final Mapper mapper;
 
 	@GetMapping(value = "/register")

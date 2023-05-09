@@ -1,6 +1,6 @@
 package com.web.clothes.ClothesWeb.service;
 
-import com.web.clothes.ClothesWeb.dto.MailInfoDto;
+import com.web.clothes.ClothesWeb.dto.requestDto.MailInfoDto;
 import com.web.clothes.ClothesWeb.entity.User;
 
 public interface MailerService {
