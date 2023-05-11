@@ -22,8 +22,8 @@ public class AttributeServiceImpl implements AttributeService{
 	private final AttributeRepository attributeRepository;
 
 	@Override
-	public Optional<Attribute> getAttribute(Integer attributeId) {
-		Optional<Attribute> attribute = attributeRepository.getAttributeById(attributeId);
+	public Optional<Attribute> getAttribute(String attributeName) {
+		Optional<Attribute> attribute = attributeRepository.getAttributeByAttributeName(attributeName);
 		return attribute;
 	}
 }

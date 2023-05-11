@@ -9,5 +9,7 @@ import com.web.clothes.ClothesWeb.entity.Attribute;
 
 @Repository
 public interface AttributeRepository extends JpaRepository<Attribute,Integer>{
-	public Optional<Attribute> getAttributeById(Integer AttributeId);
+	public Optional<Attribute> getAttributeById(Integer attributeId);
+	
+	public Optional<Attribute> getAttributeByAttributeName(String attributeName);
 }

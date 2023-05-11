@@ -6,5 +6,5 @@ import com.web.clothes.ClothesWeb.entity.Attribute;
 
 
 public interface AttributeService {
-	public Optional<Attribute> getAttribute(Integer attributeId);
+	public Optional<Attribute> getAttribute(String attributeName);
 }

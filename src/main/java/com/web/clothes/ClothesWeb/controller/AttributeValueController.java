@@ -1,6 +1,9 @@
 package com.web.clothes.ClothesWeb.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -46,34 +50,45 @@ public class AttributeValueController {
 	
 	//add attribute value
 	@PostMapping(value = "/add")
-	public String addAttributeValue(
-			@ModelAttribute("attributeValueRequestDto") @Valid AttributeValueRequestDto attributeValueRequestDto,
+	@ResponseBody
+	public ResponseEntity<?> addAttributeValue(@Valid @RequestBody  AttributeValueRequestDto attributeValueRequestDto,
 			BindingResult bindingResult,Model model) {
+		String errorMessage=null;
+		String success=null;
 		//validate input data
 		if (bindingResult.hasErrors()) {
-			return "admin/attribute";
+			Map<String, List<String>> errors = new HashMap<>();
+	        for (FieldError error : bindingResult.getFieldErrors()) {
+	            String fieldName = error.getField();
+	            String message = error.getDefaultMessage();
+	            if (!errors.containsKey(fieldName)) {
+	                errors.put(fieldName, new ArrayList<>());
+	            }
+	            errors.get(fieldName).add(message);
+	        }
+	        return ResponseEntity.badRequest().body(errors);
 		}
 		
 		//check if attribute is exist
-		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttribute().getId());
+		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttributeName());
 		if(attribute.isPresent()) {
-			model.addAttribute("error", "The system is having problems! Please try again later");
-			return "admin/attribute";
+			errorMessage= "The system is having problems! Please try again later";
+			return ResponseEntity.badRequest().body(errorMessage);
 		}
 		
 		//check if Attribute value name is exist
 		Optional<AttributeValue> attributeValueByName = attributeValueService.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
 		if(attributeValueByName.isPresent()) {
-			model.addAttribute("error", "Attribute value is not exist! Update failse!");
-			return "admin/attribute";
+			errorMessage= "Attribute value is not exist! Update failse!";
+			return ResponseEntity.badRequest().body(errorMessage);
 		}
 		
 		//map attributeValueRequestDto to attributeValue
 		AttributeValue attributeValue = mapper.attributeValueRequestDtoToAttributeValue(attributeValueRequestDto);
 		attributeValueService.save(attributeValue);
 		
-		model.addAttribute("success", "A new attribute added successfully.");
-		return "admin/attribute";
+		success= "A new attribute added successfully.";
+		return ResponseEntity.ok().body(success);
 	}
 	
 	@PutMapping(value = "/update")
@@ -87,7 +102,7 @@ public class AttributeValueController {
 		}
 		
 		//check if attribute is exist
-		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttribute().getId());
+		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttributeName());
 		if(attribute.isPresent()) {
 			model.addAttribute("error", "The system is having problems! Please try again later");
 			return "admin/attribute";

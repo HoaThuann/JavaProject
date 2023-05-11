@@ -18,5 +18,5 @@ public class AttributeValueRequestDto {
 	@Size(min = 1, max = 30,message="Attribute value name cannot be empty and must not exceed 30 characters")
 	private String attributeValueName;
 	@NotEmpty
-	private Attribute attribute;
+	private String attributeName;
 }

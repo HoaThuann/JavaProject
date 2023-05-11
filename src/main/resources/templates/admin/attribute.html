@@ -131,7 +131,10 @@
 											<b for="name">Name</b> 
 										
 											<input id="name" class="form-control"
-												type="text" name="" th:object="${attributeValue}"> <small
+												type="text" name="attributeValueName">
+											<input id="name" class="form-control"
+												type="hidden" name="attributeName">
+										 <small
 												class="form-text text-muted">The name it how it
 												appears on your site.</small>
 										</div>
@@ -209,6 +212,27 @@
 var pagination ;
 var currentPage;
 var totalPages;
+//add attribute
+	function loadData(attributeValueName,attributeName) {
+		let formData = new FormData();
+		formData.append('attributeValueName', attributeValueName);
+		formData.append('attributeName', attributeName);
+    $.ajax({
+      url: '/attributeValue/add',
+      type: 'POST',
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      data: formData,
+      success: function(data) {
+        // Xóa tất cả các dòng cũ
+        alert(data)
+        loadData(0);
+         
+
+      },
+      error: function(){}})}
+//paging for color
 function loadData(page) {
     $.ajax({
       url: '/attributeValue/listPaging',
