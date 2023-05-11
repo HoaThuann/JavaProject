@@ -35,7 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             "/images/**",
             "/css/**",
             "/js/**",
-            "/attributeValue/list/**"
+            "/attributeValue/list/**",
+            "/attributeValue/listPaging/**"
     };
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

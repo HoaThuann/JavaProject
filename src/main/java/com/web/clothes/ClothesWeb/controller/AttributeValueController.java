@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,16 +18,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
 import com.web.clothes.ClothesWeb.dto.requestDto.AttributeValueRequestDto;
 import com.web.clothes.ClothesWeb.dto.responseDto.AttributeValueResponseDto;
+import com.web.clothes.ClothesWeb.dto.responseDto.AttributeValuePageResponseDto;
 import com.web.clothes.ClothesWeb.entity.Attribute;
 import com.web.clothes.ClothesWeb.entity.AttributeValue;
 import com.web.clothes.ClothesWeb.service.AttributeService;
 import com.web.clothes.ClothesWeb.service.AttributeValueService;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -131,11 +136,24 @@ public class AttributeValueController {
 	public String getAllAttributes(@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "0") int page,Model model) {
 		
 	    Page<AttributeValue> attributeValuePage = attributeValueService.getAllAttributeValue(page, size);
-	    List<AttributeValueResponseDto> taskListResponseDtoList=attributeValuePage.stream().map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
+	    List<AttributeValueResponseDto> attributeValueResponseDto=attributeValuePage.stream().map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
 	    		attributeValue.getAttributeValueName())).collect(Collectors.toList());
-	    model.addAttribute("taskListResponseDtoList", taskListResponseDtoList);
+	    model.addAttribute("attributeValue",new AttributeValue());
+	    model.addAttribute("attributeValueResponseDto", attributeValueResponseDto);
 	    model.addAttribute("page", attributeValuePage);
 	    return "admin/attribute";
+	}
+	
+	@GetMapping(value = "/listPaging")
+	@ResponseBody
+	public ResponseEntity<AttributeValuePageResponseDto> getAllAttributesJson(@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "0") int page,Model model) {
+		
+	    Page<AttributeValue> attributeValuePage = attributeValueService.getAllAttributeValue(page, size);
+	    List<AttributeValueResponseDto> attributeValueResponseDto=attributeValuePage.stream().map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
+	    		attributeValue.getAttributeValueName())).collect(Collectors.toList());
+	    AttributeValuePageResponseDto attributeValuePageResponseDto = new AttributeValuePageResponseDto(attributeValuePage.getTotalPages(),attributeValuePage.getNumber(),attributeValuePage.getSize(),attributeValueResponseDto);
+	    return ResponseEntity.ok(attributeValuePageResponseDto);
+	   
 	}
 
 }
