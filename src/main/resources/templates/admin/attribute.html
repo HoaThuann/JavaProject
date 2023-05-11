@@ -130,16 +130,15 @@
 										<div class="form-group">
 											<b for="name">Name</b> 
 										
-											<input id="name" class="form-control"
+											<input id="colorAttributeValueName" class="form-control"
 												type="text" name="attributeValueName">
-											<input id="name" class="form-control"
-												type="hidden" name="attributeName">
+												<small style="height:20px;position: relative" th:id="colorAttributeValueName-error" class="text-danger form-text"></small><br>
 										 <small
 												class="form-text text-muted">The name it how it
 												appears on your site.</small>
 										</div>
 										<br>
-										<button class="btn btn-primary" type="button">Add new
+										<button class="btn btn-primary" th:id="addColor" type="button" th:onclick="addAttribute(event)">Add new
 											Color</button>
 									</form>
 								</div>
@@ -209,58 +208,99 @@
 		crossorigin="anonymous"></script>
 		
 <script>
-var pagination ;
-var currentPage;
-var totalPages;
-//add attribute
-	function loadData(attributeValueName,attributeName) {
-		let formData = new FormData();
-		formData.append('attributeValueName', attributeValueName);
-		formData.append('attributeName', attributeName);
+	var pagination ;
+	var currentPage;
+	var totalPages;
+	var attributeValueName; 
+	var attributeName;
+	//click on the input box, the error line will disappear
+	var colorAttributeValueName = document.getElementById("colorAttributeValueName");
+	colorAttributeValueName.addEventListener("focus", function() {
+		document.getElementById("colorAttributeValueName-error").textContent = ""; 
+		});
+	
+	//add attribute
+	function addAttribute(event) {
+	if(event.target.id == 'addColor'){
+		attributeValueName = document.getElementById("colorAttributeValueName").value;
+		attributeName = 'color';
+	}else if(event.target.id == 'addSize'){
+		attributeValueName = document.getElementById("sizeAttributeValueName").value;
+		attributeName = 'size';
+	}
+		
     $.ajax({
       url: '/attributeValue/add',
       type: 'POST',
-      processData: false,
-      contentType: false,
-      dataType: 'json',
-      data: formData,
+      contentType: 'application/json',
+      data: JSON.stringify({ attributeValueName: attributeValueName, attributeName: attributeName }),
       success: function(data) {
         // Xóa tất cả các dòng cũ
+        document.getElementById("colorAttributeValueName").value = "";
+        $("#colorAttributeValueName-error").text('');
         alert(data)
         loadData(0);
-         
+        
+        
 
       },
-      error: function(){}})}
-//paging for color
-function loadData(page) {
-    $.ajax({
-      url: '/attributeValue/listPaging',
-      type: 'GET',
-      dataType: 'json',
-      data: {page : page},
-      success: function(data) {
-        // Xóa tất cả các dòng cũ
-        $('#color-table tbody').empty();
-
-        // Thêm các dòng mới
-        $.each(data.attributeValueResponseDto, function(index, task) {
-        	var row = $('<tr>');
-            row.append($('<td>').text(data.currentPage * data.size + index+1));
-            row.append($('<td>').text(task.name));
-            row.append($('<td>').html('<a href="#" class="text-decoration-none"><i class="bi bi-pencil-square"></i>Edit</a>'));
-            row.append($('<td>').html('<a href="#" class="text-decoration-none text-danger"><i class="bi bi-trash"></i>Delete</a>'));
-            $('#color-table tbody').append(row);
-        });
-         pagination = '';
-         currentPage = data.currentPage;
-         totalPages = data.totalPages;
-        // Tạo lại các nút trang
-        createPagination("#paging",pagination,currentPage,totalPages );
-         
-
-      },
-      error: function(){}})}
+      error: function(jqXHR, textStatus, errorThrown){
+    	  if (jqXHR.status === 400) {
+    	        var errors = jqXHR.responseJSON;
+    	        if (errors.hasOwnProperty("bindingErrors")) {
+    	            var bindingErrors = errors["bindingErrors"];
+    	            for (var i = 0; i < bindingErrors.length; i++) {
+    	                var error = bindingErrors[i];
+    	                // đặt thông tin lỗi vào thẻ tương ứng
+    	                $("#colorAttributeValueName-error").text(error.defaultMessage);
+    	            }
+    	        }
+    	        if (Object.keys(errors).length >= 1) {
+    	            // xử lý các lỗi khác nếu có
+    	            for (var key in errors) {
+    	                if (key !== "bindingErrors") {
+    	                    var error = errors[key];
+    	                    // đặt thông tin lỗi vào thẻ tương ứng
+    	                    $("#colorAttributeValueName-error").text(error);
+    	                }
+    	            }
+    	        }
+    	    } else {
+    	        // xử lý lỗi khác
+    	        console.log(textStatus);
+    	        console.log(errorThrown);
+    	    }
+      }})}	
+	
+	//get data for color table
+	function loadData(page) {
+	    $.ajax({
+	      url: '/attributeValue/listPaging',
+	      type: 'GET',
+	      dataType: 'json',
+	      data: {page : page},
+	      success: function(data) {
+	        // Xóa tất cả các dòng cũ
+	        $('#color-table tbody').empty();
+	
+	        // Thêm các dòng mới
+	        $.each(data.attributeValueResponseDto, function(index, task) {
+	        	var row = $('<tr>');
+	            row.append($('<td>').text(data.currentPage * data.size + index+1));
+	            row.append($('<td>').text(task.name));
+	            row.append($('<td>').html('<a href="#" class="text-decoration-none"><i class="bi bi-pencil-square"></i>Edit</a>'));
+	            row.append($('<td>').html('<a href="#" class="text-decoration-none text-danger"><i class="bi bi-trash"></i>Delete</a>'));
+	            $('#color-table tbody').append(row);
+	        });
+	         pagination = '';
+	         currentPage = data.currentPage;
+	         totalPages = data.totalPages;
+	        // Tạo lại các nút trang
+	        createPagination("#paging",pagination,currentPage,totalPages );
+	         
+	
+	      },
+	      error: function(){}})}
       
       
       //function to create pagination after call ajax

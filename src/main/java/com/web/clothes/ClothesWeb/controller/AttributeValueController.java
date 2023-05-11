@@ -53,41 +53,43 @@ public class AttributeValueController {
 	@ResponseBody
 	public ResponseEntity<?> addAttributeValue(@Valid @RequestBody  AttributeValueRequestDto attributeValueRequestDto,
 			BindingResult bindingResult,Model model) {
-		String errorMessage=null;
-		String success=null;
+		Map<String, Object> errors = new HashMap<>();
+		System.out.println("vào/add");
+		System.out.println(attributeValueRequestDto.getAttributeValueName());
+		System.out.println(attributeValueRequestDto.getAttributeName());
+		
+		
+		
 		//validate input data
 		if (bindingResult.hasErrors()) {
-			Map<String, List<String>> errors = new HashMap<>();
-	        for (FieldError error : bindingResult.getFieldErrors()) {
-	            String fieldName = error.getField();
-	            String message = error.getDefaultMessage();
-	            if (!errors.containsKey(fieldName)) {
-	                errors.put(fieldName, new ArrayList<>());
-	            }
-	            errors.get(fieldName).add(message);
-	        }
-	        return ResponseEntity.badRequest().body(errors);
+			System.out.println("1");
+			errors.put("bindingErrors", bindingResult.getAllErrors());
 		}
 		
 		//check if attribute is exist
 		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttributeName());
-		if(attribute.isPresent()) {
-			errorMessage= "The system is having problems! Please try again later";
-			return ResponseEntity.badRequest().body(errorMessage);
-		}
-		
 		//check if Attribute value name is exist
 		Optional<AttributeValue> attributeValueByName = attributeValueService.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
-		if(attributeValueByName.isPresent()) {
-			errorMessage= "Attribute value is not exist! Update failse!";
-			return ResponseEntity.badRequest().body(errorMessage);
+		if(attribute.isEmpty()) {
+			System.out.println("2");
+			errors.put("NotFoundAttribute", "The system is having problems! Please try again later");
+			
 		}
+		if(attributeValueByName.isPresent()) {
+			System.out.println("3");
+			errors.put("NotFoundAttributeExist", "Attribute value already exists! Please enter a new one!");
+		}
+		
+		if(!errors.isEmpty()) {
+			return ResponseEntity.badRequest().body(errors);
+		}
+		
 		
 		//map attributeValueRequestDto to attributeValue
 		AttributeValue attributeValue = mapper.attributeValueRequestDtoToAttributeValue(attributeValueRequestDto);
 		attributeValueService.save(attributeValue);
-		
-		success= "A new attribute added successfully.";
+		System.out.println("thành công");
+		String success= "A new attribute added successfully.";
 		return ResponseEntity.ok().body(success);
 	}
 	
