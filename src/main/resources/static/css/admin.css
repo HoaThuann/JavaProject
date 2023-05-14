@@ -2,3 +2,15 @@
 .bg-slidebar{
     background-color: #293a6c ;
 }
+.nav-pills li a:hover{
+    background-color: blue;
+}
+.error{
+    height: 20px;
+}
+b{
+    color: rgb(12, 12, 178);
+}
+.table-image  td, th {
+    vertical-align: middle;
+  }

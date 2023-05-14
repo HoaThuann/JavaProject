@@ -1,52 +1,56 @@
 
-<div class="col-auto  px-sm-2 px-0 bg-slidebar" th:fragment="slidebar">
-	<div
-		class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+<div
+	class="col-auto col-md-4 col-lg-2 px-sm-2 px-0 bg-slidebar min-vh-100"
+	th:fragment="slidebar">
+	<div class=" flex-column align-items-sm-start px-3 pt-2">
 		<a href="#"
 			class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none ">
 			<i class="fs-4 bi bi-speedometer2"></i><span
 			class="fs-5 d-none d-sm-inline"> Dashboard</span>
 		</a>
-		<ul
-			class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
-			id="menu">
-			<li><a href="#" class="nav-link px-0 align-middle text-white">
-					<i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Orders</span>
-			</a></li>
-
-			<li><a href="#submenu3" data-bs-toggle="collapse"
+		<ul class="nav nav-pills flex-column " id="menu">
+			<li><a href="oder.html"
 				class="nav-link px-0 align-middle text-white"> <i
-					class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Products</span>
+					class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Orders</span></a>
+			</li>
+
+			<li><a href=""
+				class="nav-link px-0 align-middle text-white align-items-center rounded collapsed"
+				data-bs-toggle="collapse" data-bs-target="#dashboard-collapse"
+				aria-expanded="false"> <i class="fs-4 bi-grid"></i> <span
+					class="ms-1 d-none d-sm-inline">Products</span>
 			</a>
-				<ul class="collapse nav flex-column ms-1" id="submenu3"
-					data-bs-parent="#menu">
-					<li class="w-100"><a href="newCategory.html"
-						class="nav-link px-0"> <span
-							class="d-none d-sm-inline text-warning">Category</span>
-					</a></li>
-					<li><a href="attributes.html"
-						class="nav-link px-0 text-warning"> <span
-							class="d-none d-sm-inline">Attribiutes</span>
-					</a></li>
-					<li><a href="newProduct.html"
-						class="nav-link px-0 text-warning"> <span
-							class="d-none d-sm-inline">New Product</span>
-					</a></li>
-				</ul></li>
-			<li><a href="#" class="nav-link px-0 align-middle text-white">
-					<i class="fs-4 bi-people"></i> <span
-					class="ms-1 d-none d-sm-inline">Customers</span>
+				<div class="collapse" id="dashboard-collapse">
+					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+						<li><a href="newCategory.html" class="nav-link  text-warning"><i
+								class="bi bi-caret-right-fill"></i> <span
+								class="d-none d-sm-inline">Category</span> </a></li>
+						<li><a href="attributes.html" class="nav-link text-warning">
+								<i class="bi bi-caret-right-fill"></i><span
+								class="d-none d-sm-inline">Attribiutes</span>
+						</a></li>
+						<li><a href="newProduct.html" class="nav-link text-warning"><i
+								class="bi bi-caret-right-fill"></i> <span
+								class="d-none d-sm-inline">Product</span> </a></li>
+					</ul>
+				</div></li>
+			<li><a href="user.html"
+				class="nav-link px-0 align-middle text-white"> <i
+					class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">User</span>
 			</a></li>
 			<li><a href="#" class="nav-link px-0 align-middle text-white">
 					<i class="fs-4 bi bi-pencil-square"></i> <span
 					class="ms-1 d-none d-sm-inline">Report</span>
 			</a></li>
-			<li><a href="#" class="nav-link px-0 align-middle text-white">
-					<i class="fs-4 bi-chat-text-fill"></i> <span
+			<li><a href="feedback.html"
+				class="nav-link px-0 align-middle text-white"> <i
+					class="fs-4 bi-chat-text-fill"></i> <span
 					class="ms-1 d-none d-sm-inline">Feedback</span>
 			</a></li>
 		</ul>
 		<hr>
+
 	</div>
 </div>
+
 
