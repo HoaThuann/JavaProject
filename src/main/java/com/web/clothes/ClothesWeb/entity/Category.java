@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
