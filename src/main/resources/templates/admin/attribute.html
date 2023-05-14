@@ -34,20 +34,20 @@
 					<li class="nav-item" role="presentation">
 						<button class="nav-link active" id="pills-home-tab"
 							data-bs-toggle="pill" data-bs-target="#pills-home" type="button"
-							role="tab" aria-controls="pills-home" aria-selected="true">Add
+							role="tab" aria-controls="pills-home" aria-selected="true" onclick="loadData(0,'size')">Add
 							Size</button>
 					</li>
 					<li class="nav-item" role="presentation">
 						<button class="nav-link" id="pills-profile-tab"
 							data-bs-toggle="pill" data-bs-target="#pills-profile"
 							type="button" role="tab" aria-controls="pills-profile"
-							aria-selected="false">Add Color</button>
+							aria-selected="false" onclick="loadData(0,'color')">Add Color</button>
 					</li>
 				</ul>
 				<div class="tab-content" id="pills-tabContent">
 					<div class="tab-pane fade show active" id="pills-home"
 						role="tabpanel" aria-labelledby="pills-home-tab">
-						<form action="">
+						
 							<div class="row pt-5">
 								<hr>
 								<h3>Product Size</h3>
@@ -61,52 +61,38 @@
 										will not automatically assign it back to products.
 									</p>
 									<h5>Add new Size</h5>
-									<div class="form-group">
-										<b for="name">Name</b> <input id="name" class="form-control"
-											type="text" name=""> <small
-											class="form-text text-muted">The name it how it
-											appears on your site.</small>
-									</div>
-									<br>
-									<button class="btn btn-primary" type="button">Add new
-										Size</button>
+										<div class="form-group">
+											<b for="name">Name</b> 
+										
+											<input id="sizeAttributeValueName" class="form-control"
+												type="text" name="sizeAttributeValueName">
+												<small style="height:20px" th:id="sizeAttributeValueName-error" class="text-danger form-text"></small><br>
+										 <small
+												class="form-text text-muted">The name it how it
+												appears on your site.</small>
+										</div>
+										<br>
+										<button class="btn btn-primary" th:id="addSize" type="button" th:onclick="addAttribute(event)">Add new
+											Size</button>
 								</div>
 								<div class="col-6">
-									<table class="table">
+									<table th:id="size-table" class="table">
 										<thead>
 											<tr>
+												<th scope="col">Number</th>
 												<th scope="col">Name</th>
 												<th scope="col">Edit</th>
 												<th scope="col">Delete</th>
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td>S</td>
-												<td><a href="" class="text-decoration-none"><i
-														class="bi bi-pencil-square"></i>Edit</a></td>
-												<td><a href="" class="text-decoration-none text-danger"><i
-														class="bi bi-trash"></i>Delete</a></td>
-											</tr>
-											<tr>
-												<td>M</td>
-												<td><a href="" class="text-decoration-none"><i
-														class="bi bi-pencil-square"></i>Edit</a></td>
-												<td><a href="" class="text-decoration-none text-danger"><i
-														class="bi bi-trash"></i>Delete</a></td>
-											</tr>
-											<tr>
-												<td>L</td>
-												<td><a href="" class="text-decoration-none"><i
-														class="bi bi-pencil-square"></i>Edit</a></td>
-												<td><a href="" class="text-decoration-none text-danger"><i
-														class="bi bi-trash"></i>Delete</a></td>
-											</tr>
+											
 										</tbody>
 									</table>
+									<nav th:id="size-paging"></nav>
 								</div>
 							</div>
-						</form>
+						
 
 					</div>
 					<div class="tab-pane fade" id="pills-profile" role="tabpanel"
@@ -131,7 +117,7 @@
 										
 											<input id="colorAttributeValueName" class="form-control"
 												type="text" name="attributeValueName">
-												<small style="height:20px;position: relative" th:id="colorAttributeValueName-error" class="text-danger form-text"></small><br>
+												<small style="height:20px" th:id="colorAttributeValueName-error" class="text-danger form-text"></small><br>
 										 <small
 												class="form-text text-muted">The name it how it
 												appears on your site.</small>
@@ -142,7 +128,7 @@
 									</form>
 								</div>
 								<div class="col-6">
-									<table id="color-table" class="table">
+									<table th:id="color-table" class="table">
 										<thead>
 											<tr>
 												<th scope="col">Number</th>
@@ -153,51 +139,12 @@
 										</thead>
 										<tbody>
 									
-										<tr th:id="color" th:each="attributeValue ,row : ${attributeValueResponseDto}">
-											<td th:id="number" th:text="${(page.number) * page.size + row.count}"></td>
-											<td th:id="name" th:text="${attributeValue.name}"></td>
-											<td><a href="" class="text-decoration-none"><i
-													class="bi bi-pencil-square"></i>Edit</a></td>
-											<td><a href="" class="text-decoration-none text-danger"><i
-													class="bi bi-trash"></i>Delete</a></td>
-										</tr>
+										
 
 
 									</tbody>
 								</table>
-								<nav th:id="paging">
-									<ul class="pagination">
-										<li th:class="${page.number > 0} ? '' : 'page-item disabled'">
-											<a class="page-link"
-											th:onclick="'loadData(' + ${page.number - 1} + ')'"
-											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-
-										</a>
-										</li>
-										<li
-											th:each="i : ${#numbers.sequence(page.number > 2 ? page.number - 2 : 0, page.number + 2 < page.totalPages - 1 ? page.number + 2 : page.totalPages - 1)}"
-											class="page-item"
-											th:classappend="${i == page.number} ? 'active'"><a
-											class="page-link" th:onclick="'loadData(' + ${i} + ')'"
-											th:text="${i + 1}"></a></li>
-										<li
-											th:if="${page.totalPages > 5 && page.number < page.totalPages - 3}"
-											class="page-item disabled"><a class="page-link" href="#">...</a></li>
-										<li
-											th:if="${page.totalPages > 1 && page.totalPages - 1 != page.number && page.totalPages - 2 != page.number && page.number < page.totalPages - 3}"
-											class="page-item"><a class="page-link"
-											th:onclick="'loadData(' + ${page.totalPages - 1} + ')'"
-											th:text="${page.totalPages}"></a></li>
-										<li
-											th:class="${page.number < page.totalPages - 1} ? '' : 'page-item disabled'">
-											<a class="page-link"
-											th:onclick="'loadData(' + ${page.number + 1} + ')'"
-											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-
-										</a>
-										</li>
-									</ul>
-								</nav>
+								<nav th:id="color-paging"></nav>
 							</div>
 						</div>
 
@@ -206,7 +153,56 @@
 			</div>
 		</div>
 	</div>
-
+	<!-- Modal delete-->
+	<div class="modal fade" id="deleteAttributeValue">
+	 <div class="modal-dialog">
+	  <div class="modal-content">
+	   <div class="modal-header">
+	    <h5 class="modal-title" id="exampleModalLabel">Delete Attribute Value</h5>
+	    <button th:class="close-delete" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+	   </div>
+	   <div class="modal-body">
+	    <p>Are you sure you want to delete?</p>
+	    <input type="hidden" th:id="attributeValueIdDeleteModal" name="attributeValue">
+	    <input type="hidden" th:id="attributeNameDeleteModal" class="form-control"
+				 name="attributeName">
+	  </div>
+	  <div class="modal-footer">
+	   <button th:class="close-delete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+	    <button type="button" class="btn btn-danger" th:id="delete-attribute-value">Delete</button>
+	   </div>
+	  </div>
+	 </div>
+	</div>
+	
+	<!-- Modal edit-->
+	<div class="modal fade" id="editAttributeValue">
+	 <div class="modal-dialog">
+	  <div class="modal-content">
+	   <div class="modal-header">
+	    <h5 class="modal-title" id="exampleModalLabel">Edit Attribute Value</h5>
+	    <button th:class="close-edit" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+	   </div>
+	   <div class="modal-body">
+	    	<b for="name">Name</b> 		
+	    	
+	    	<input th:id="attributeValueIdModal" class="form-control"
+				type="hidden" name="attributeValueIdModal">
+			<input type="hidden" th:id="attributeNameModal" class="form-control"
+				 name="attributeName">
+			<input th:id="attributeValueNameModal" class="form-control"
+				type="text" name="attributeValueName">
+			<small style="height:20px" th:id="attributeValueNameModal-error" class="text-danger form-text"></small><br>
+	    <input type="hidden" th:id="attributeValueId" name="attributeValue">
+	  </div>
+	  <div class="modal-footer">
+	   <button th:class="close-edit" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+	    <button type="button" class="btn bg-primary" th:id="edit-attribute-value">Update</button>
+	   </div>
+	  </div>
+	 </div>
+	</div>
+	
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
 		integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
@@ -217,133 +213,6 @@
 		crossorigin="anonymous"></script>
 
 		
-<script>
-	var pagination ;
-	var currentPage;
-	var totalPages;
-	var attributeValueName; 
-	var attributeName;
-	//click on the input box, the error line will disappear
-	var colorAttributeValueName = document.getElementById("colorAttributeValueName");
-	colorAttributeValueName.addEventListener("focus", function() {
-		document.getElementById("colorAttributeValueName-error").textContent = ""; 
-		});
-	
-	//add attribute
-	function addAttribute(event) {
-	if(event.target.id == 'addColor'){
-		attributeValueName = document.getElementById("colorAttributeValueName").value;
-		attributeName = 'color';
-	}else if(event.target.id == 'addSize'){
-		attributeValueName = document.getElementById("sizeAttributeValueName").value;
-		attributeName = 'size';
-	}
-		
-
-    $.ajax({
-      url: '/attributeValue/add',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ attributeValueName: attributeValueName, attributeName: attributeName }),
-      success: function(data) {
-        // Xóa tất cả các dòng cũ
-        document.getElementById("colorAttributeValueName").value = "";
-        $("#colorAttributeValueName-error").text('');
-        alert(data)
-        loadData(0);
-        
-        
-
-      },
-      error: function(jqXHR, textStatus, errorThrown){
-    	  if (jqXHR.status === 400) {
-    	        var errors = jqXHR.responseJSON;
-    	        if (errors.hasOwnProperty("bindingErrors")) {
-    	            var bindingErrors = errors["bindingErrors"];
-    	            for (var i = 0; i < bindingErrors.length; i++) {
-    	                var error = bindingErrors[i];
-    	                // đặt thông tin lỗi vào thẻ tương ứng
-    	                $("#colorAttributeValueName-error").text(error.defaultMessage);
-    	            }
-    	        }
-    	        if (Object.keys(errors).length >= 1) {
-    	            // xử lý các lỗi khác nếu có
-    	            for (var key in errors) {
-    	                if (key !== "bindingErrors") {
-    	                    var error = errors[key];
-    	                    // đặt thông tin lỗi vào thẻ tương ứng
-    	                    $("#colorAttributeValueName-error").text(error);
-    	                }
-    	            }
-    	        }
-    	    } else {
-    	        // xử lý lỗi khác
-    	        console.log(textStatus);
-    	        console.log(errorThrown);
-    	    }
-      }})}	
-	
-	//get data for color table
-	function loadData(page) {
-	    $.ajax({
-	      url: '/attributeValue/listPaging',
-	      type: 'GET',
-	      dataType: 'json',
-	      data: {page : page},
-	      success: function(data) {
-	        // Xóa tất cả các dòng cũ
-	        $('#color-table tbody').empty();
-	
-	        // Thêm các dòng mới
-	        $.each(data.attributeValueResponseDto, function(index, task) {
-	        	var row = $('<tr>');
-	            row.append($('<td>').text(data.currentPage * data.size + index+1));
-	            row.append($('<td>').text(task.name));
-	            row.append($('<td>').html('<a href="#" class="text-decoration-none"><i class="bi bi-pencil-square"></i>Edit</a>'));
-	            row.append($('<td>').html('<a href="#" class="text-decoration-none text-danger"><i class="bi bi-trash"></i>Delete</a>'));
-	            $('#color-table tbody').append(row);
-	        });
-	         pagination = '';
-	         currentPage = data.currentPage;
-	         totalPages = data.totalPages;
-	        // Tạo lại các nút trang
-	        createPagination("#paging",pagination,currentPage,totalPages );
-	         
-	
-	      },
-	      error: function(){}})}
-      
-      
-      //function to create pagination after call ajax
-      function createPagination(navId,pagination,currentPage,totalPages ){
-    	  $(navId).empty();
-          
-          pagination += '<ul class="pagination">';
-          pagination += '<li ' + (currentPage > 0 ? '' : 'class="page-item disabled"') + '><a class="page-link" onclick="' + (currentPage > 0 ? 'loadData(' + (currentPage - 1) + ')' : 'return false;') + '" aria-label="Previous"><span aria-hidden="true">&laquo;</span><span class="sr-only"></span></a></li>';
-
-         
-              var startPage = currentPage > 2 ? currentPage - 2 : 0;
-              var endPage = currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1;
-
-              for (var i = startPage; i <= endPage; i++) {
-                  pagination += '<li ' + (currentPage === i ? 'class="page-item active"' : '') + '><a class="page-link" onclick="loadData(' + i + ')" href="#">' + (i + 1) + '</a></li>';
-              }
-             //${page.totalPages > 5 && page.number < page.totalPages - 3}
-              if ((totalPages > 5) &&  (currentPage < totalPages-3)) {
-                  pagination += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-              }
-             
-              if ((totalPages > 1) && (totalPages-1 != currentPage) && (totalPages-2 != currentPage) && (currentPage<totalPages-3)) {
-                  pagination += '<li><a class="page-link" onclick="loadData(' + (totalPages - 1) + ')" href="#">' + totalPages + '</a></li>';
-              }
-
-          pagination += '<li ' + (currentPage < totalPages - 1 ? '' : 'class="page-item disabled"') + '><a class="page-link" onclick="' + (currentPage < totalPages - 1 ? 'loadData(' + (currentPage + 1) + ')' : 'return false;') + '" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only"></span></a></li>';
-          pagination += '</ul>';
-           // Thay thế nút trang cũ bằng nút trang mới
-           $(navId).append(pagination);
-      }
-	
-
-</script>
+<script th:src="@{/js/attributeValue.js}" type="text/javascript"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-
+import com.web.clothes.ClothesWeb.entity.Attribute;
 import com.web.clothes.ClothesWeb.entity.AttributeValue;
 import com.web.clothes.ClothesWeb.repository.AttributeValueRepository;
 import org.springframework.data.domain.Sort;
@@ -16,7 +16,9 @@ import java.util.Optional;
 public class AttributeValueServiceImpl implements AttributeValueService{
 	
 	private final AttributeValueRepository attributeValueRepository;
-//	private PageRequest attributePageable;
+	
+	private final AttributeService attributeService;
+
 	@Override
 	public Optional<AttributeValue> getAttributeValue(Integer attributeValueId) {
 		Optional<AttributeValue> attributeValue = attributeValueRepository.getAttributeValueById(attributeValueId);
@@ -45,10 +47,11 @@ public class AttributeValueServiceImpl implements AttributeValueService{
 	}
 
 	@Override
-	public Page<AttributeValue> getAllAttributeValue(int pageNumber, int szie) {
+	public Page<AttributeValue> getAttributeValueByAttribute(int pageNumber, int szie,String attributeName) {
+		Optional<Attribute> attribute =attributeService.getAttribute(attributeName);
 		PageRequest attributePageable = PageRequest.of(pageNumber, szie, Sort.by(Sort.Direction.ASC, "attributeValueName"));
 		
-		 Page<AttributeValue> attributeValuePage = attributeValueRepository.findAll(attributePageable);
+		 Page<AttributeValue> attributeValuePage = attributeValueRepository.findAttributeValueByAttribute(attributePageable,attribute.get());
 		 
 		return attributeValuePage;
 	}

@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -36,7 +37,6 @@ import com.web.clothes.ClothesWeb.entity.AttributeValue;
 import com.web.clothes.ClothesWeb.service.AttributeService;
 import com.web.clothes.ClothesWeb.service.AttributeValueService;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -47,130 +47,132 @@ public class AttributeValueController {
 	private final AttributeValueService attributeValueService;
 	private final AttributeService attributeService;
 	private final Mapper mapper;
-	
-	//add attribute value
+
+	// add attribute value
 	@PostMapping(value = "/add")
 	@ResponseBody
-	public ResponseEntity<?> addAttributeValue(@Valid @RequestBody  AttributeValueRequestDto attributeValueRequestDto,
-			BindingResult bindingResult,Model model) {
+	public ResponseEntity<?> addAttributeValue(@Valid @RequestBody AttributeValueRequestDto attributeValueRequestDto,
+			BindingResult bindingResult, Model model) {
 		Map<String, Object> errors = new HashMap<>();
-		System.out.println("vào/add");
-		System.out.println(attributeValueRequestDto.getAttributeValueName());
-		System.out.println(attributeValueRequestDto.getAttributeName());
-		
-		
-		
-		//validate input data
+
+		// validate input data
 		if (bindingResult.hasErrors()) {
 			System.out.println("1");
 			errors.put("bindingErrors", bindingResult.getAllErrors());
 		}
-		
-		//check if attribute is exist
+
+		// check if attribute is exist
 		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttributeName());
-		//check if Attribute value name is exist
-		Optional<AttributeValue> attributeValueByName = attributeValueService.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
-		if(attribute.isEmpty()) {
-			System.out.println("2");
-			errors.put("NotFoundAttribute", "The system is having problems! Please try again later");
+		// check if Attribute value name is exist
+		Optional<AttributeValue> attributeValueByName = attributeValueService
+				.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
+		if (attribute.isEmpty()) {
 			
+			errors.put("NotFoundAttribute", "The system is having problems! Please try again later");
+
 		}
-		if(attributeValueByName.isPresent()) {
-			System.out.println("3");
+		if (attributeValueByName.isPresent() ) {
+			
 			errors.put("NotFoundAttributeExist", "Attribute value already exists! Please enter a new one!");
 		}
-		
-		if(!errors.isEmpty()) {
+
+		if (!errors.isEmpty()) {
 			return ResponseEntity.badRequest().body(errors);
 		}
-		
-		
-		//map attributeValueRequestDto to attributeValue
+
+		// map attributeValueRequestDto to attributeValue
 		AttributeValue attributeValue = mapper.attributeValueRequestDtoToAttributeValue(attributeValueRequestDto);
 		attributeValueService.save(attributeValue);
 		System.out.println("thành công");
-		String success= "A new attribute added successfully.";
+		String success = "A new attribute added successfully.";
 		return ResponseEntity.ok().body(success);
 	}
-	
+
 	@PutMapping(value = "/update")
-	public String updateAttributeValue(@PathVariable Integer attributeValueId,
-			@ModelAttribute("attributeValueRequestDto") @Valid AttributeValueRequestDto attributeValueRequestDto,
-			BindingResult bindingResult,Model model) {
+	@ResponseBody
+	public ResponseEntity<?> updateAttributeValue(@RequestParam Integer attributeValueId,
+			@Valid @RequestBody AttributeValueRequestDto attributeValueRequestDto, BindingResult bindingResult) {
+
 		
-		//validate input data
+		Map<String, Object> errors = new HashMap<>();
+		// validate input data
 		if (bindingResult.hasErrors()) {
-			return "admin/attribute";
+			
+			errors.put("bindingErrors", bindingResult.getAllErrors());
+			return ResponseEntity.badRequest().body(errors);
 		}
-		
-		//check if attribute is exist
+
+		// check if attribute is exist
 		Optional<Attribute> attribute = attributeService.getAttribute(attributeValueRequestDto.getAttributeName());
-		if(attribute.isPresent()) {
-			model.addAttribute("error", "The system is having problems! Please try again later");
-			return "admin/attribute";
+		if (attribute.isEmpty()) {
+			
+			errors.put("error", "The system is having problems! Please try again later");
+			return ResponseEntity.badRequest().body(errors);
+
 		}
-		
-		//check if Attribute value is exist
+
+		// check if Attribute value is exist
 		Optional<AttributeValue> attributeValueById = attributeValueService.getAttributeValue(attributeValueId);
-		if(attributeValueById.isPresent()) {
-			model.addAttribute("error", "Attribute value is not exist! Update failse!");
-			return "admin/attribute";
-		}
+		Optional<AttributeValue> attributeValueByName = attributeValueService
+				.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
 		
-		//check if Attribute value name is exist
-		Optional<AttributeValue> attributeValueByName = attributeValueService.findAttributeValueByName(attributeValueRequestDto.getAttributeValueName());
-		if(attributeValueByName.isPresent()) {
-			model.addAttribute("error", "Attribute value is not exist! Update failse!");
-			return "admin/attribute";
+		if (attributeValueById.isEmpty()) {
+			errors.put("error", "Attribute value is not exist! Update failse!");
+			return ResponseEntity.badRequest().body(errors);
+
+		} else if (attributeValueByName.isPresent() && !(attributeValueByName.get().getId()).equals(attributeValueId)) {
+			// check if Attribute value name is exist
+			
+			errors.put("error", "Attribute value name already exists! Please enter a new one!");
+			return ResponseEntity.badRequest().body(errors);
 		}
-		
-		//map attributeValueRequestDto to attributeValue
+		// map attributeValueRequestDto to attributeValue
 		AttributeValue attributeValue = mapper.attributeValueRequestDtoToAttributeValue(attributeValueRequestDto);
-		
+		attributeValue.setId(attributeValueId);
 		attributeValueService.save(attributeValue);
-		
-		model.addAttribute("success", "A new attribute updated successfully.");
-		return "admin/attribute";
+
+		return ResponseEntity.ok().body("A new attribute updated successfully.");
 	}
-	
+
 	@DeleteMapping(value = "/delete")
-	public String deleteAttributeValue(@PathVariable Integer attributeValueId,Model model) {
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> deleteAttributeValue(@RequestParam("attributeValueId") Integer attributeValueId) {
 		
-		//check if Attribute value is exist
+		// check if Attribute value is exist
 		Optional<AttributeValue> attributeValueById = attributeValueService.getAttributeValue(attributeValueId);
-		if(attributeValueById.isPresent()) {
-			model.addAttribute("error", "Attribute value is not exist! Update failse!");
-			return "admin/attribute";
+		if (attributeValueById.isEmpty()) {
+			
+			return ResponseEntity.badRequest().body("Attribute value is not exist! Update failse!");
 		}
 		
 		attributeValueService.deleteAttributeValue(attributeValueId);
-		
-		model.addAttribute("success", "A new attribute deleted successfully.");
+		return ResponseEntity.ok().body("A new attribute deleted successfully.");
+	}
+
+	@GetMapping(value = "/list")
+	public String getAllAttributes() {
 		return "admin/attribute";
 	}
-	
-	@GetMapping(value = "/list")
-	public String getAllAttributes(@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "0") int page,Model model) {
-		
-	    Page<AttributeValue> attributeValuePage = attributeValueService.getAllAttributeValue(page, size);
-	    List<AttributeValueResponseDto> attributeValueResponseDto=attributeValuePage.stream().map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
-	    		attributeValue.getAttributeValueName())).collect(Collectors.toList());
-	    model.addAttribute("attributeValue",new AttributeValue());
-	    model.addAttribute("attributeValueResponseDto", attributeValueResponseDto);
-	    model.addAttribute("page", attributeValuePage);
-	    return "admin/attribute";
-	}
-	
-	@GetMapping(value = "/listPaging")
+
+	@GetMapping(value = "/getAttributePage")
 	@ResponseBody
-	public ResponseEntity<AttributeValuePageResponseDto> getAllAttributesJson(@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "0") int page,Model model) {
+	public ResponseEntity<AttributeValuePageResponseDto> getAllAttributesJson(
+			@RequestParam(defaultValue = "8") int size, @RequestParam(defaultValue = "0") int page,
+			@RequestParam String attributeName) {
+
+		Page<AttributeValue> attributeValuePage = attributeValueService.getAttributeValueByAttribute(page, size,
+				attributeName);
+		List<AttributeValueResponseDto> attributeValueResponseDto = attributeValuePage.stream()
+				.map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
+						attributeValue.getAttributeValueName()))
+				.collect(Collectors.toList());
 		
-	    Page<AttributeValue> attributeValuePage = attributeValueService.getAllAttributeValue(page, size);
-	    List<AttributeValueResponseDto> attributeValueResponseDto=attributeValuePage.stream().map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
-	    		attributeValue.getAttributeValueName())).collect(Collectors.toList());
-	    AttributeValuePageResponseDto attributeValuePageResponseDto = new AttributeValuePageResponseDto(attributeValuePage.getTotalPages(),attributeValuePage.getNumber(),attributeValuePage.getSize(),attributeValueResponseDto);
-	    return ResponseEntity.ok(attributeValuePageResponseDto);
-	   
+		AttributeValuePageResponseDto attributeValuePageResponseDto = new AttributeValuePageResponseDto(
+				attributeValuePage.getTotalPages(), attributeValuePage.getNumber(), attributeValuePage.getSize(),
+				attributeValueResponseDto);
+		return ResponseEntity.ok(attributeValuePageResponseDto);
+
 	}
 
 }
