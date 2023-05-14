@@ -106,7 +106,9 @@
 	      error: function(jqXHR, textStatus, errorThrown){
 	    	  if (jqXHR.status === 400) {
 	    	        var error = jqXHR.responseJSON || jqXHR.responseText;
+	    	        $('#deleteAttributeValue').modal('hide');
 	    	        alert(error)
+	    	        loadData(currentPageForEditAndDelete,attributeName);
 	    	    } else {
 	    	        // xử lý lỗi khác
 	    	        console.log(textStatus);
@@ -114,7 +116,7 @@
 	    	    }
 	      }})
         });
-	//click close edit modal , error deteletd 
+	//click close edit modal , error set empty 
 	$(document).on('click', '.close-edit', function() { 
 		document.getElementById("attributeValueNameModal-error").textContent = '';
 	});
@@ -183,7 +185,7 @@
 	    	    }
 	      }})
         });
-	//get data for color table
+	//get data for table
 	loadData(0,"size");
 	function loadData(page,attributeName) {
 		var table = "#"+attributeName+"-table tbody";

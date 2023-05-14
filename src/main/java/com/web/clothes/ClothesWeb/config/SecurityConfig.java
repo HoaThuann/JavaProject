@@ -34,12 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             "/user/resendMail",
             "/images/**",
             "/css/**",
-            "/js/**",
-            "/attributeValue/list/**",
-            "/attributeValue/getAttributePage/**",
-            "/attributeValue/add",
-            "/attributeValue/delete/**",
-            "/attributeValue/update/**"
+            "/js/**"
     };
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -73,7 +68,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .and()
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated()
+                .permitAll()
+//                .authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/user/login")
