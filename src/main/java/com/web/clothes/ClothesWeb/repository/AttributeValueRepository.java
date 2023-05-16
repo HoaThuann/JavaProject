@@ -23,9 +23,9 @@ public interface AttributeValueRepository extends JpaRepository<AttributeValue, 
 	//public void deleteAttributeValueById(Integer attributeValueId);
 
 //public Page<AttributeValue> findAttributeValueByAttribute(Pageable Page,Attribute attribute);
-	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt = null AND a.attribute = :attribute")
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.attribute = :attribute")
 	Page<AttributeValue> findAttributeValuePage(Pageable pageable, @Param("attribute") Attribute attribute);
 	
-	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt = null AND a.attribute = :attribute")
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.attribute = :attribute")
 	List<AttributeValue> getCategoryList(@Param("attribute") Attribute attribute);
 }
