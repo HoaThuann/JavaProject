@@ -2,7 +2,10 @@ package com.web.clothes.ClothesWeb.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.web.clothes.ClothesWeb.entity.User;
@@ -15,5 +18,8 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 	public Optional<User> findUserByEmail(String email);
 	public Optional<User> findUserByPhone(String phone);
 	
+	public Optional<User> getUserById(Integer userId);
 	
+	@Query("SELECT c FROM User c WHERE c.deleted = 0")
+    Page<User> findAll(Pageable pageable);
 }
