@@ -20,6 +20,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 	
 	public Optional<User> getUserById(Integer userId);
 	
-	@Query("SELECT c FROM User c WHERE c.deleted = 0")
+	@Query("SELECT c FROM User c WHERE c.deleteAt is null")
     Page<User> findAll(Pageable pageable);
 }
