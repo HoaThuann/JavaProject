@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public void deleteUser(User user) {
-		user.setDeleted(1);
+		//user.setDeleted(1);
 		user.setDeleteAt(LocalDate.now());
 		userRepository.save(user);
 	}
