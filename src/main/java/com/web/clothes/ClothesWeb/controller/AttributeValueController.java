@@ -148,7 +148,7 @@ public class AttributeValueController {
 	}
 	
 	//return view attribute value
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/")
 	public String getAttributeView() {
 		return "admin/attribute";
 	}
@@ -173,5 +173,19 @@ public class AttributeValueController {
 		return ResponseEntity.ok(attributeValuePageResponseDto);
 
 	}
+	
+	@GetMapping(value = "/getAll")
+	@ResponseBody
+	public ResponseEntity<List<AttributeValueResponseDto>> getAttributeList(@RequestParam String attributeName) {
+		List<AttributeValue> attributeValues = attributeValueService.getList(attributeName);
+		List<AttributeValueResponseDto> attributeValueResponseDto = attributeValues.stream()
+				.map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
+						attributeValue.getAttributeValueName()))
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(attributeValueResponseDto);
+
+	}
+	
+	
 
 }

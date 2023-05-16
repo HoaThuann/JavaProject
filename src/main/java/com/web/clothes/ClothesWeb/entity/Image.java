@@ -1,37 +1,42 @@
 package com.web.clothes.ClothesWeb.entity;
 
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class Role {
+@Builder
+public class Image {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	@Column(nullable = false, length = 255)
+	private String inmageForShow;
 	
-	@Column(nullable = false,unique = true,length = 20)
-    private String roleName;
+	@Column(nullable = false, length = 255)
+	private String inmageForSave;
 	
-	@OneToMany(mappedBy = "role",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<User> users = new ArrayList<>();
+	@Column(nullable = true)
+	private Boolean isDefault;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false, referencedColumnName = "id")
+    private Product product;
 }
+

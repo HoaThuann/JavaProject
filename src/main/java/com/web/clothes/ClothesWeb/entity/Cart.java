@@ -41,9 +41,6 @@ public class Cart {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate deleteAt;
     
-    @Column(nullable = false)
-    private int deleted = 0;
-	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;

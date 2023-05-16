@@ -132,7 +132,7 @@ public class CategoryController {
 	
 	
 	//return view category
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/")
 	public String getCategoryView() {
 		return "admin/category";
 	}
@@ -157,5 +157,24 @@ public class CategoryController {
 		return ResponseEntity.ok(categoryPageResponseDto);
 
 	}
+	
+	//return view category
+		@GetMapping(value = "/getAll")
+		public ResponseEntity<?> getAllCategory(String a) {
+			List<Category> categories = categoryService.getAll();
+			
+			List<CategoryResponseDto> categoryResponseDtos = categories.stream()
+					.map(category -> new CategoryResponseDto(category.getId(),
+							category.getCategoryName()))
+					.collect(Collectors.toList());
+			
+			for (CategoryResponseDto category2 : categoryResponseDtos) {
+				System.out.println(category2.getName());
+			}
+			if(categoryResponseDtos.isEmpty()) {
+				return ResponseEntity.badRequest().body("list rỗng");
+			}
+			return ResponseEntity.ok(categoryResponseDtos);
+		}
 
 }

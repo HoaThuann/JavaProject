@@ -1,5 +1,6 @@
 package com.web.clothes.ClothesWeb.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -14,5 +15,6 @@ public interface AttributeValueService {
 	public void deleteAttributeValue(AttributeValue attributeValue);
 	public Optional<AttributeValue> findAttributeValueByName(String attributeValueName);
 	public Page<AttributeValue> getAttributeValueByAttribute(int pageNumber, int szie,String attributeName);
+	public List<AttributeValue> getList(String attributeName);
 //	public Optional<AttributeValue> findAttributeValueByKey(String name );
 }

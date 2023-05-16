@@ -26,7 +26,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.ArrayList;
+import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -69,8 +70,6 @@ public class User {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate deleteAt;
 
-	@Column(nullable = false)
-	private int deleted = 0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id", nullable = false)
@@ -78,8 +77,8 @@ public class User {
 	private Role role;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<Feedback> feedback = new HashSet<>();
+	private List<Feedback> feedback = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Order> orders = new HashSet<>();
+	private List<Order> orders = new ArrayList<>();
 }

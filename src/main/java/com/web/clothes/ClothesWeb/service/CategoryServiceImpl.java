@@ -1,6 +1,7 @@
 package com.web.clothes.ClothesWeb.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public void deleteCategory(Category category) {
-		//set deleted =1
-		category.setDeleted(1);
+		
 		//set date delete
 		category.setDeleteAt(LocalDate.now());
 		categoryRepository.save(category);
@@ -55,8 +55,14 @@ public class CategoryServiceImpl implements CategoryService{
 		
 		PageRequest categoryPageable = PageRequest.of(pageNumber, szie, Sort.by(Sort.Direction.ASC, "categoryName"));
 		
-		 Page<Category> categoryPage = categoryRepository.findAll(categoryPageable);
+		 Page<Category> categoryPage = categoryRepository.findCategoryPage(categoryPageable);
 		 
 		return categoryPage;
+	}
+
+	@Override
+	public List<Category> getAll() {
+		 List<Category> categories= categoryRepository.findAll();
+		 return categories;
 	}
 }

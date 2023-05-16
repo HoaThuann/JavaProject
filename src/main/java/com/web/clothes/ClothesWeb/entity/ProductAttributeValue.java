@@ -1,7 +1,9 @@
 package com.web.clothes.ClothesWeb.entity;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,21 +15,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
+@Entity
 public class ProductAttributeValue {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attribute_value_id", nullable = false)
-    private AttributeValue attributeValue;
+    
+    @ManyToOne
+    @JoinColumn(name = "size_id")
+    private AttributeValue size;
+    
+    @ManyToOne
+    @JoinColumn(name = "color_id")
+    private AttributeValue color;
 }
