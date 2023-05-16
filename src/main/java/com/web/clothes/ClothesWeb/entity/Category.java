@@ -1,8 +1,8 @@
 package com.web.clothes.ClothesWeb.entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,10 +47,8 @@ public class Category {
 
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate deleteAt;
-    
-    @Column(nullable = false)
-    private int deleted = 0;
 
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Product> products = new HashSet<>();
+
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	private List<Product> products = new ArrayList<>();
 }

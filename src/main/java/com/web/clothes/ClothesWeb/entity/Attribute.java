@@ -19,7 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,10 +44,7 @@ public class Attribute {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate deleteAt;
 	
-    @Column(nullable = false)
-    private int deleted = 0;
-	
 	@OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<AttributeValue> attributeValues = new HashSet<>();
+	private List<AttributeValue> attributeValues = new ArrayList<>();
 
 }

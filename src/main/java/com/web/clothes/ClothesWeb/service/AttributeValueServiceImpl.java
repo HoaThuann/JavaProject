@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,6 @@ public class AttributeValueServiceImpl implements AttributeValueService{
 
 	@Override
 	public void deleteAttributeValue(AttributeValue attributeValue) {
-		attributeValue.setDeleted(1);
 		attributeValue.setDeleteAt(LocalDate.now());
 		attributeValueRepository.save(attributeValue);
 	}
@@ -54,9 +54,16 @@ public class AttributeValueServiceImpl implements AttributeValueService{
 		Optional<Attribute> attribute =attributeService.getAttribute(attributeName);
 		PageRequest attributePageable = PageRequest.of(pageNumber, szie, Sort.by(Sort.Direction.ASC, "attributeValueName"));
 		
-		 Page<AttributeValue> attributeValuePage = attributeValueRepository.findAll(attributePageable,attribute.get());
+		 Page<AttributeValue> attributeValuePage = attributeValueRepository.findAttributeValuePage(attributePageable,attribute.get());
 		 
 		return attributeValuePage;
+	}
+
+	@Override
+	public List<AttributeValue> getList(String attributeName) {
+		Optional<Attribute> attribute =attributeService.getAttribute(attributeName);
+		List<AttributeValue> AttributeValues = attributeValueRepository.getCategoryList(attribute.get());
+		return AttributeValues;
 	}
 
 

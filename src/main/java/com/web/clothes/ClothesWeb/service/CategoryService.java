@@ -1,5 +1,6 @@
 package com.web.clothes.ClothesWeb.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,4 +14,5 @@ public interface CategoryService {
 	public void deleteCategory(Category category);
 	public Optional<Category> findCategoryByName(String categoryName);
 	public Page<Category> getAllCategory(int pageNumber, int szie);
+	public List<Category> getAll();
 }

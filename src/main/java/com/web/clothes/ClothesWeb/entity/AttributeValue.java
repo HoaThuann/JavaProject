@@ -14,6 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -21,7 +24,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,14 +49,11 @@ public class AttributeValue {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate deleteAt;
     
-    @Column(nullable = false)
-    private int deleted = 0;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "attribute_id", nullable = false, referencedColumnName = "id")
 	private Attribute attribute;
 	
-	@OneToMany(mappedBy = "attributeValue", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<ProductAttributeValue> productAttributes = new HashSet<>();
+	
+	
 
 }

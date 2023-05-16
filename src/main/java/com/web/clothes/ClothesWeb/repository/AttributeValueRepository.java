@@ -1,6 +1,7 @@
 package com.web.clothes.ClothesWeb.repository;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,9 @@ public interface AttributeValueRepository extends JpaRepository<AttributeValue, 
 	//public void deleteAttributeValueById(Integer attributeValueId);
 
 //public Page<AttributeValue> findAttributeValueByAttribute(Pageable Page,Attribute attribute);
-	@Query("SELECT a FROM AttributeValue a WHERE a.deleted = 0 AND a.attribute = :attribute")
-	Page<AttributeValue> findAll(Pageable pageable, @Param("attribute") Attribute attribute);
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.attribute = :attribute")
+	Page<AttributeValue> findAttributeValuePage(Pageable pageable, @Param("attribute") Attribute attribute);
+	
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.attribute = :attribute")
+	List<AttributeValue> getCategoryList(@Param("attribute") Attribute attribute);
 }

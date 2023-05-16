@@ -22,7 +22,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,9 +41,6 @@ public class Order {
 	@Column(nullable = false)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate createAt = LocalDate.now();
-
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	private LocalDate deleteAt;
 	
 	@Column(nullable = false)
 	private int status;
@@ -55,6 +53,6 @@ public class Order {
 	private User user;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<OrderDetails> orderDetailsSet = new HashSet<>();
+	private List<OrderDetails> orderDetailsSet = new ArrayList<>();
 
 }
