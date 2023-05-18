@@ -14,10 +14,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import com.web.clothes.ClothesWeb.entity.AttributeValue;
 import com.web.clothes.ClothesWeb.entity.Cart;
@@ -36,19 +44,20 @@ import lombok.Setter;
 @Getter
 public class ProductRequestDto {
 	
-	@NotBlank(message="Title cannot be empty and must not exceed 50 characters")
-	@Size(min = 1, max = 50,message="Title cannot be empty and must not exceed 50 characters")
+	@NotBlank(message="Title cannot be empty and must not exceed 50 characters.")
+	@Size(min = 1, max = 50,message="Title cannot be empty and must not exceed 50 characters.")
 	private String title;
 	
-	@NotBlank(message="Price cannot be empty")
+    @Min(value=0, message="Price cannot be empty and must be a positive number.")
 	private float price;
-	
+    
+    @Min(value=0, message="Curent price must be a positive number.")
 	private float currentPrice;
+    
+    @NotBlank(message = "Please choose gender.")
+	private String gender;
 	
-	@NotBlank(message="Gender cannot be empty")
-	private boolean gender;
-	
-	@NotBlank(message="Discription cannot be empty and must not exceed 1500 characters")
+    @NotBlank(message="Discription cannot be empty and must not exceed 1500 characters")
 	@Size(min = 1, max = 1500,message="Discription cannot be empty and must not exceed 1500 characters")
 	private String description;
 	
@@ -56,7 +65,7 @@ public class ProductRequestDto {
 
 	private Integer colorAttributeValue;
 	
-	@NotBlank(message="Category cannot be empty")
-	private Integer categoryId;
+	@NotNull(message="Category cannot be empty.")
+	private Integer category;
 	
 }

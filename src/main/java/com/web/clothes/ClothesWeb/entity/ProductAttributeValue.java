@@ -36,4 +36,13 @@ public class ProductAttributeValue {
     @ManyToOne
     @JoinColumn(name = "color_id")
     private AttributeValue color;
+
+	public ProductAttributeValue(Product product, AttributeValue size, AttributeValue color) {
+		super();
+		this.product = product;
+		this.size = size;
+		this.color = color;
+	}
+    
+    
 }

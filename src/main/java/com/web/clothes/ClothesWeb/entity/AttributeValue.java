@@ -36,7 +36,7 @@ public class AttributeValue {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, unique = true, length = 20)
+	@Column(nullable = false, length = 20)
 	private String attributeValueName;
 
 	@Column(nullable = false)

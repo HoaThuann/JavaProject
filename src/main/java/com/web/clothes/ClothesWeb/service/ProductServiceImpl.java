@@ -15,13 +15,21 @@ public class ProductServiceImpl implements ProductService{
 	private ProductRepository productRepository;
 
 	@Override
-	public Optional<Product> getCategory(Integer productId) {
+	public Optional<Product> getProduct(Integer productId) {
 		Optional<Product> product = productRepository.getProductById(productId);
 		return product;
 	}
 
 	@Override
-	public void save(Product product) {
-		productRepository.save(product);
+	public Optional<Product>  save(Product product) {
+		return productRepository.saveProduct(product);
+		 
+	}
+
+
+	@Override
+	public Optional<Product> getProductByTitle(String title) {
+		Optional<Product> product = productRepository.getProductByTitle(title);
+		return product;
 	}
 }

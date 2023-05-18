@@ -16,8 +16,9 @@ import com.web.clothes.ClothesWeb.entity.Category;
 
 @Repository
 public interface AttributeValueRepository extends JpaRepository<AttributeValue, Integer> {
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.id = :AttributeValueId")
 	public Optional<AttributeValue> getAttributeValueById(Integer AttributeValueId);
-
+	@Query("SELECT a FROM AttributeValue a WHERE a.deleteAt is null AND a.attributeValueName = :attibuteName")
 	public Optional<AttributeValue> getAttributeValueByAttributeValueNameIgnoreCase(String attibuteName);
 
 	//public void deleteAttributeValueById(Integer attributeValueId);

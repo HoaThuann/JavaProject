@@ -160,16 +160,8 @@ public class AttributeValueController {
 			@RequestParam(defaultValue = "8") int size, @RequestParam(defaultValue = "0") int page,
 			@RequestParam String attributeName) {
 
-		Page<AttributeValue> attributeValuePage = attributeValueService.getAttributeValueByAttribute(page, size,
-				attributeName);
-		List<AttributeValueResponseDto> attributeValueResponseDto = attributeValuePage.stream()
-				.map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
-						attributeValue.getAttributeValueName()))
-				.collect(Collectors.toList());
-		
-		AttributeValuePageResponseDto attributeValuePageResponseDto = new AttributeValuePageResponseDto(
-				attributeValuePage.getTotalPages(), attributeValuePage.getNumber(), attributeValuePage.getSize(),
-				attributeValueResponseDto);
+		AttributeValuePageResponseDto attributeValuePageResponseDto = attributeValueService.getAttributeValueByAttribute(page, size, attributeName);
+
 		return ResponseEntity.ok(attributeValuePageResponseDto);
 
 	}

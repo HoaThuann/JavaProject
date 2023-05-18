@@ -50,7 +50,7 @@ public class Mapper {
 		product.setTitle(productRequestDto.getTitle());
 		
 		//set category
-		Optional<Category> category = categoryService.getCategory(productRequestDto.getCategoryId());
+		Optional<Category> category = categoryService.getCategory(productRequestDto.getCategory());
 		product.setCategory(category.get());
 		
 		//set price
@@ -64,7 +64,7 @@ public class Mapper {
 		
 		
 		//set gender
-		product.setGender(productRequestDto.isGender());
+		product.setGender(Boolean.parseBoolean(productRequestDto.getGender()));
 		
 //		//set size
 //		Optional<AttributeValue> size = attributeValueService.getAttributeValue(productRequestDto.getSizeAttributeValue());

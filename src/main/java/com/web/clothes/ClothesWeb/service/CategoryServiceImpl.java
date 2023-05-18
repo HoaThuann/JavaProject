@@ -11,12 +11,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.web.clothes.ClothesWeb.entity.Category;
+import com.web.clothes.ClothesWeb.repository.AttributeValueRepository;
 import com.web.clothes.ClothesWeb.repository.CategoryRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
-	@Autowired
-	private CategoryRepository categoryRepository;
+	
+	private final CategoryRepository categoryRepository;
 
 	@Override
 	public Optional<Category> getCategory(Integer categoryId) {

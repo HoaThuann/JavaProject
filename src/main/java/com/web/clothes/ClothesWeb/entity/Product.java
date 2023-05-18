@@ -34,7 +34,7 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, unique = true, length = 50)
+	@Column(nullable = false, length = 50)
 	private String title;
 	
 	@Column(nullable = false)
