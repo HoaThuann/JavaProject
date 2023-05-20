@@ -13,32 +13,42 @@
 		loadData(0);
 		
 			function loadRole() {
-		    const categorySelect = document.getElementById('role');
-		    $.ajax({
-		        url: "/category/getAll",
-		        type: "GET",
-		        dataType: 'json',
-		        success: function(categories) {
-		        	if (categories.length != 0) {
-		        		categorySelect.innerHTML = "<option value='1'>Choose category</option>";
-			    		  categories.forEach(function(category) {
-			    			    const optionElement = document.createElement('option');
-			    			    optionElement.value = category.id;
-			    			    optionElement.textContent = category.categoryName;
-			    			    categorySelect.appendChild(optionElement);
-			    			});
-			    		  
-			          } else {
-			              // Xử lý khi danh sách có dữ liệu
-			          }
-		        },
-		        error: function(jqXHR, textStatus, errorMessage) {
-		            var error = jqXHR.responseJSON || jqXHR.responseText;
-		            alert(error);
-		            alert("not ok");
-		        }
-		    });
-		}
+		    const roleSelect = document.getElementById('role');
+		    const roleName = document.getElementById('roleNameEditModal').value;
+		   
+		        $.ajax({
+		            url: "/user/getAllRole",
+		            type: "GET",
+		            dataType: 'json',
+		            success: function(roles) {
+		                if (roles.length != 0) {
+		                    roleSelect.innerHTML = ""; // Xóa các lựa chọn cũ
+		
+		                    roles.forEach(function(role) {
+		                        const optionElement = document.createElement('option');
+		                        optionElement.value = role.id;
+		                        optionElement.textContent = role.roleName;
+		                        
+		                         if (roleName === 'ADMIN') {
+		                            optionElement.selected = true; // Chọn tự động nếu role.roleName là "ADMIN"
+		                        }
+		                        
+		                        roleSelect.appendChild(optionElement);
+		                    });
+		
+		                    roleSelect.setAttribute('data-loaded', 'true');
+		                } else {
+		                    // Xử lý khi danh sách có dữ liệu
+		                }
+		            },
+		            error: function(jqXHR, textStatus, errorMessage) {
+		                var error = jqXHR.responseJSON || jqXHR.responseText;
+		                alert(error);
+		                alert("not ok");
+		            }
+		        });
+		    }
+		
 		//get data for table
 		function loadData(page) {
 			var table = "#user-table tbody";
@@ -59,8 +69,14 @@
 		            row.append($('<td>').attr('email','email').text(user.email));
 		            row.append($('<td>').attr('phone','phone').text(user.phone));
 		            row.append($('<td>').attr('address','address').text(user.address));
-		            row.append($('<td>').attr('address','address').text(user.address));
-		            		            
+		            row.append($('<td>').attr('roleName','roleName').text(user.roleName));
+		            
+		            row.append($('<td>').attr({
+		            	'data-id': user.id,
+		                'data-bs-toggle': 'modal',
+		                'data-bs-target': '#editUser'
+		            }).addClass('text-primary').html('<i class="bi bi-pencil-square"></i>Set Role'));
+		            
 		            row.append($('<td>').attr({
 		            	'data-id': user.id,
 		                'data-bs-toggle': 'modal',
@@ -111,7 +127,7 @@
 		$('#deleteUser').on('show.bs.modal', function (e) {
 	                var deleteButton = e.relatedTarget;
 	                var userId = $(deleteButton).data('id');
-	                $('#userIdDeleteModal').val(userId);	               
+	                $('#userIdDeleteModal').val(userId);
 	                
 	   })
 	   //delete user when click button with id 'delete-user' in modal
@@ -136,6 +152,64 @@
 		    	        $('#deleteUser').modal('hide');
 		    	        alert(error)
 		    	        loadData(currentPageForEditAndDelete);
+		    	    } else {
+		    	        // xử lý lỗi khác
+		    	        console.log(textStatus);
+		    	        console.log(errorThrown);
+		    	    }
+		      }})
+	        });
+	        
+	        $('#editUser').on('show.bs.modal', function (e) {
+					var editButton = e.relatedTarget;
+	               var roleName = $(editButton).closest('tr').find('td[roleName="roleName"]').text();
+	               var userId = $(editButton).data('id');
+	                $('#roleNameEditModal').val(roleName);
+	                $('#userIdEditModal').val(userId);
+	                 loadRole();
+	                
+	   })
+	        //edit addtribute value when click button with id 'edit-attribute-value' in modal
+	   $(document).on("click","#edit-role",function(e) {
+		   userId = document.getElementById("userIdEditModal").value;
+		   roleId =  document.getElementById("role").value;
+		
+		    $.ajax({
+		      url: '/user/update?userId=' + encodeURIComponent(userId) + '&roleId=' + encodeURIComponent(roleId),
+		      type: 'PUT',
+		      contentType: 'application/json',
+		      data: ({userId:parseInt(userId), roleId: parseInt(roleId)}),
+		      success: function(data) {
+		        // close modal
+		        $('#editUser').modal('hide');
+		        //notice that the deletion was successful
+		        alert(data);
+		        //reload pagination
+		        loadData(currentPageForEditAndDelete);
+		      },
+		      error: function(jqXHR, textStatus, errorThrown){
+		    	  if (jqXHR.status === 400) {
+		    	        var errors = jqXHR.responseJSON;
+		    	        if (errors.hasOwnProperty("bindingErrors")) {
+		    	            var bindingErrors = errors["bindingErrors"];
+		    	            for (var i = 0; i < bindingErrors.length; i++) {
+		    	                var error = bindingErrors[i];
+		    	                
+		    	                //display error
+		    	                //$("#categoryNameEditModal-error").text(error.defaultMessage);
+		    	            }
+		    	        }
+		    	        if (Object.keys(errors).length >= 1) {
+		    	            //other error
+		    	            for (var key in errors) {
+		    	                if (key !== "bindingErrors") {
+		    	                    var error = errors[key];
+		    	                    // đặt thông tin lỗi vào thẻ tương ứng
+		    	                    //$("#categoryNameEditModal-error").text(error);
+		    	                }
+		    	            }
+		    	        }
+		    	        alert(error);
 		    	    } else {
 		    	        // xử lý lỗi khác
 		    	        console.log(textStatus);

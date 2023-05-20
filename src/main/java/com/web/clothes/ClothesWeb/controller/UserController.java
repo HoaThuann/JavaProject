@@ -39,14 +39,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.web.clothes.ClothesWeb.dto.responseDto.AuthenticationResponseDto;
-import com.web.clothes.ClothesWeb.dto.responseDto.CategoryPageResponseDto;
-import com.web.clothes.ClothesWeb.dto.responseDto.CategoryResponseDto;
+import com.web.clothes.ClothesWeb.dto.responseDto.RoleResponseDto;
 import com.web.clothes.ClothesWeb.dto.responseDto.UserPageResponseDto;
 import com.web.clothes.ClothesWeb.dto.responseDto.UserResponseDto;
 import com.web.clothes.ClothesWeb.dto.requestDto.LoginRequestDto;
 import com.web.clothes.ClothesWeb.dto.requestDto.UserRequestDto;
 import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
-import com.web.clothes.ClothesWeb.entity.Category;
 import com.web.clothes.ClothesWeb.entity.ConfirmationToken;
 import com.web.clothes.ClothesWeb.entity.Role;
 import com.web.clothes.ClothesWeb.entity.User;
@@ -270,24 +268,19 @@ public class UserController {
 
 	@PutMapping(value = "/update")
 	@ResponseBody
-	public ResponseEntity<?> updateUser(@RequestParam Integer userId,
-			BindingResult bindingResult, @RequestParam("") String roleName) {
+	public ResponseEntity<?> updateUser(@RequestParam("userId") Integer userId,
+			@RequestParam("roleId") Integer roleID) {
 
 		Map<String, Object> errors = new HashMap<>();
-		// validate input data
-		if (bindingResult.hasErrors()) {
-
-			errors.put("bindingErrors", bindingResult.getAllErrors());
-			return ResponseEntity.badRequest().body(errors);
-		}
+		
 		// check if Attribute value is exist
 		Optional<User> userById = userService.getUsers(userId);
-		Optional<Role> role = roleService.getRoleByName(roleName);
+		Optional<Role> role = roleService.getRole(roleID);
 		if (userById.isEmpty()) {
 			errors.put("error", "User is not exist! Update failse!");
 			return ResponseEntity.badRequest().body(errors);
 		}
-		
+
 		userById.get().setRole(role.get());
 		userService.save(userById.get());
 
@@ -322,9 +315,9 @@ public class UserController {
 
 		Page<User> userPage = userService.getAllUser(page, size);
 
-		List<UserResponseDto> userResponseDtos = userPage.stream()
-				.map(user -> new UserResponseDto(user.getId(), user.getFullName(), user.getUserName(),
-						 user.getEmail(), user.getPhone(), user.getAddress(), user.getRole().getRoleName()))
+		List<UserResponseDto> userResponseDtos = userPage
+				.stream().map(user -> new UserResponseDto(user.getId(), user.getFullName(), user.getUserName(),
+						user.getEmail(), user.getPhone(), user.getAddress(), user.getRole().getRoleName()))
 				.collect(Collectors.toList());
 
 		UserPageResponseDto userPageResponseDto = new UserPageResponseDto(userPage.getTotalPages(),
@@ -332,5 +325,19 @@ public class UserController {
 
 		return ResponseEntity.ok(userPageResponseDto);
 
+	}
+
+	// return view role
+	@GetMapping(value = "/getAllRole")
+	public ResponseEntity<?> getAllRole(String a) {
+		List<Role> roles = roleService.getAll();
+
+		List<RoleResponseDto> roleResponseDtos = roles.stream()
+				.map(role -> new RoleResponseDto(role.getId(), role.getRoleName())).collect(Collectors.toList());
+
+		if (roleResponseDtos.isEmpty()) {
+			return ResponseEntity.badRequest().body("list rỗng");
+		}
+		return ResponseEntity.ok(roleResponseDtos);
 	}
 }
