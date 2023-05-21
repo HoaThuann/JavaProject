@@ -2,12 +2,17 @@ package com.web.clothes.ClothesWeb.controller;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -22,17 +27,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import com.web.clothes.ClothesWeb.dto.responseDto.AuthenticationResponseDto;
+import com.web.clothes.ClothesWeb.dto.responseDto.RoleResponseDto;
+import com.web.clothes.ClothesWeb.dto.responseDto.UserPageResponseDto;
+import com.web.clothes.ClothesWeb.dto.responseDto.UserResponseDto;
 import com.web.clothes.ClothesWeb.dto.requestDto.LoginRequestDto;
 import com.web.clothes.ClothesWeb.dto.requestDto.UserRequestDto;
 import com.web.clothes.ClothesWeb.dto.mapper.Mapper;
@@ -47,7 +56,6 @@ import com.web.clothes.ClothesWeb.service.MailerService;
 import com.web.clothes.ClothesWeb.service.RoleService;
 import com.web.clothes.ClothesWeb.service.UserService;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -58,13 +66,13 @@ public class UserController {
 	private final UserService userService;
 
 	private final MailerService mailerService;
-	
+
 	private final ConfirmationTokenService confirmationTokenService;
 
 	private final PasswordEncoder passwordEncoder;
 
 	private final UserRepository userRepository;
-	
+
 	private final AuthenticationManager authenticationManager;
 
 	private final JwtTokenProvider tokenProvider;
@@ -72,7 +80,7 @@ public class UserController {
 	private static final String USER = "USER";
 
 	private final RoleService roleService;
-	
+
 	private final Mapper mapper;
 
 	@GetMapping(value = "/register")
@@ -80,20 +88,22 @@ public class UserController {
 		model.addAttribute("userRequestDto", new UserRequestDto());
 		return "users/register";
 	}
+
 	@Transactional
 	@PostMapping(value = "/checkRegister")
 	public String registerUser(Model model, @ModelAttribute("userRequestDto") @Valid UserRequestDto userRequestDto,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			
+
 			return "users/register";
 		}
 		Optional<User> UserByEmail = userService.findUserByEmail(userRequestDto.getEmail());
 		Optional<User> UserByPhone = userService.findUserByPhone(userRequestDto.getPhone());
 		Optional<User> UserByUserName = userService.findUserByUsername(userRequestDto.getUsername());
 		Optional<Role> role = roleService.getRoleByName(USER);
-		
-		if (UserByEmail.isPresent() || UserByPhone.isPresent() || UserByUserName.isPresent() ||  !userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
+
+		if (UserByEmail.isPresent() || UserByPhone.isPresent() || UserByUserName.isPresent()
+				|| !userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
 			if (UserByEmail.isPresent()) {
 				model.addAttribute("emailDuplicate", "Email already exists! Please enter a new one");
 			}
@@ -103,7 +113,7 @@ public class UserController {
 			if (UserByUserName.isPresent()) {
 				model.addAttribute("usernameDuplicate", "Username already exists! Please enter a new one");
 			}
-			if(!userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
+			if (!userRequestDto.getPassword().equals(userRequestDto.getConfirmPassword())) {
 				model.addAttribute("notMatchPass", "Passwords do not match");
 			}
 			return "users/register";
@@ -117,7 +127,7 @@ public class UserController {
 		userService.save(user);
 
 		mailerService.sendEmailToConfirmAccount(user);
-		
+
 		model.addAttribute("email", user.getEmail());
 		return "users/successfulRegisteration";
 	}
@@ -128,7 +138,7 @@ public class UserController {
 		Optional<User> user = userService.findUserByEmail(email);
 
 		mailerService.sendEmailToConfirmAccount(user.get());
-		model.addAttribute("email",user.get().getEmail());
+		model.addAttribute("email", user.get().getEmail());
 		return "users/successfulRegisteration";
 	}
 
@@ -254,5 +264,80 @@ public class UserController {
 	public String sucess() {
 		System.out.println(SecurityContextHolder.getContext().getAuthentication());
 		return "b1";
+	}
+
+	@PutMapping(value = "/update")
+	@ResponseBody
+	public ResponseEntity<?> updateUser(@RequestParam("userId") Integer userId,
+			@RequestParam("roleId") Integer roleID) {
+
+		Map<String, Object> errors = new HashMap<>();
+		
+		// check if Attribute value is exist
+		Optional<User> userById = userService.getUsers(userId);
+		Optional<Role> role = roleService.getRole(roleID);
+		if (userById.isEmpty()) {
+			errors.put("error", "User is not exist! Update failse!");
+			return ResponseEntity.badRequest().body(errors);
+		}
+
+		userById.get().setRole(role.get());
+		userService.save(userById.get());
+
+		return ResponseEntity.ok().body("A User update successfully.");
+	}
+
+	@DeleteMapping(value = "/delete")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> deleteUser(@RequestParam("userId") Integer userId) {
+
+		// check if user is exist
+		Optional<User> userById = userService.getUsers(userId);
+		if (userById.isEmpty()) {
+			return ResponseEntity.badRequest().body("User is not exist! Delete failse!");
+		}
+		userService.deleteUser(userById.get());
+		return ResponseEntity.ok().body("A User deleted successfully.");
+	}
+
+	// return view user
+	@GetMapping(value = "/list")
+	public String getCategoryView() {
+		return "admin/user";
+	}
+
+	// get page user
+	@GetMapping(value = "/getUserPage")
+	@ResponseBody
+	public ResponseEntity<UserPageResponseDto> getUserPage(@RequestParam(defaultValue = "8") int size,
+			@RequestParam(defaultValue = "0") int page) {
+
+		Page<User> userPage = userService.getAllUser(page, size);
+
+		List<UserResponseDto> userResponseDtos = userPage
+				.stream().map(user -> new UserResponseDto(user.getId(), user.getFullName(), user.getUserName(),
+						user.getEmail(), user.getPhone(), user.getAddress(), user.getRole().getRoleName()))
+				.collect(Collectors.toList());
+
+		UserPageResponseDto userPageResponseDto = new UserPageResponseDto(userPage.getTotalPages(),
+				userPage.getNumber(), userPage.getSize(), userResponseDtos);
+
+		return ResponseEntity.ok(userPageResponseDto);
+
+	}
+
+	// return view role
+	@GetMapping(value = "/getAllRole")
+	public ResponseEntity<?> getAllRole(String a) {
+		List<Role> roles = roleService.getAll();
+
+		List<RoleResponseDto> roleResponseDtos = roles.stream()
+				.map(role -> new RoleResponseDto(role.getId(), role.getRoleName())).collect(Collectors.toList());
+
+		if (roleResponseDtos.isEmpty()) {
+			return ResponseEntity.badRequest().body("list rỗng");
+		}
+		return ResponseEntity.ok(roleResponseDtos);
 	}
 }

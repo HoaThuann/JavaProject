@@ -10,4 +10,6 @@ import com.web.clothes.ClothesWeb.entity.Role;
 @Repository
 public interface RoleRespository extends JpaRepository<Role,Integer>{
 	 public Optional<Role> findRoleByRoleName(String roleName);
+	 
+	 public Optional<Role> getRoleById(Integer roleId);
 }
