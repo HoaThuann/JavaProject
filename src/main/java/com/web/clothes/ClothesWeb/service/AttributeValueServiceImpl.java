@@ -38,6 +38,7 @@ public class AttributeValueServiceImpl implements AttributeValueService{
 
 	@Override
 	public void updateAttributeValue(AttributeValue attributeValue) {
+		attributeValue.setUpdateAt(LocalDate.now());
 		attributeValueRepository.save(attributeValue);
 	}
 

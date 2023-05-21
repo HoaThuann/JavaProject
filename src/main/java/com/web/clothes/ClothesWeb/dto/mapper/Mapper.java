@@ -46,6 +46,11 @@ public class Mapper {
 	
 	public Product productRequestDtoToProduct(ProductRequestDto productRequestDto) {
 		Product product = new Product();
+		if(productRequestDto.getId()!=null) {
+			product.setId(productRequestDto.getId());
+		}
+		
+		
 		//set title
 		product.setTitle(productRequestDto.getTitle());
 		
@@ -59,7 +64,6 @@ public class Mapper {
 		//set current price
 		if( productRequestDto.getCurrentPrice()!=0) {
 		product.setCurrentPrice(productRequestDto.getCurrentPrice());
-		product.setDiscountProduct(true);
 		}
 		
 		

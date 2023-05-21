@@ -138,7 +138,7 @@ public class AttributeValueController {
 		
 		// check if Attribute value is exist
 		Optional<AttributeValue> attributeValueById = attributeValueService.getAttributeValue(attributeValueId);
-		if (attributeValueById.isEmpty()) {
+		if (attributeValueById.isEmpty() || attributeValueById.get().getDeleteAt()!=null) {
 			
 			return ResponseEntity.badRequest().body("Attribute value is not exist! Delete failse!");
 		}

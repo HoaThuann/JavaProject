@@ -36,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public void updateCategory(Category category) {
+		category.setUpdateAt(LocalDate.now());
 		categoryRepository.save(category);
 	}
 

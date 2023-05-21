@@ -43,7 +43,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ProductRequestDto {
-	
+	private Integer id;
 	@NotBlank(message="Title cannot be empty and must not exceed 50 characters.")
 	@Size(min = 1, max = 50,message="Title cannot be empty and must not exceed 50 characters.")
 	private String title;

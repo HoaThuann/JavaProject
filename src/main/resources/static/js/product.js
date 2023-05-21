@@ -71,7 +71,23 @@
 			    }
 			});
 		}
-		
+		//click image to choose default image
+		var defaultFileIndex;
+		function getDefaultImage(event){
+			var clickedImage = event.target;
+			// Loại bỏ CSS border cho tất cả các phần tử hình ảnh khác
+		   
+		    const images = selectedImagesContainer.querySelectorAll('.selected-image img');
+		    images.forEach((image) => {
+		        image.style.border = '';
+		    });
+		    
+		    const image = clickedImage.querySelector('img');
+			image.style.border = '2px solid red';
+			defaultFileIndex =image.getAttribute('data-index');
+			
+			
+		}
 		// Lấy khung hiển thị ảnh đã chọn
 		const selectedImagesContainer = document.getElementById('selected-images');
 
@@ -80,37 +96,40 @@
 
 		// Mảng chứa các file đã chọn
 		let selectedFiles = [];
-
+		
 		// Xử lý sự kiện khi người dùng chọn file
-		fileInput.addEventListener('change', () => {
+		fileInput.addEventListener('change', imageChange);
+		//selectedImagesContainer.addEventListener('change', imageChange);
+		function imageChange(){
+			//set defaultFileIndex
+			defaultFileIndex=0;
 			// Xóa các ảnh đã hiển thị trước đó
 			  selectedImagesContainer.innerHTML = '';
 
 		    // Lấy danh sách các file đã chọn
-		    const files = fileInput.files;
-		    
-		    
-
-		    // Thêm các file mới vào mảng
-		    for (let i = 0; i < files.length; i++) {
-		        selectedFiles.push(files[i]);
-		    }
+		    if(fileInput!=null){
+				const files = fileInput.files;
+				
+				// Thêm các file mới vào mảng
+			    for (let i = 0; i < files.length; i++) {
+			        selectedFiles.push(files[i]);
+			    }
+			}
 
 		    // Hiển thị các ảnh đã chọn trên màn hình
 		    for (let i = 0; i < selectedFiles.length; i++) {
 		        // Tạo khung chứa ảnh
 		        const imageContainer = document.createElement('div');
 		        imageContainer.className = 'selected-image';
-		        imageContainer.style.marginRight='10px';
+		       
 
 		        // Tạo đối tượng ảnh
 		        const image = document.createElement('img');
 		        image.src = URL.createObjectURL(selectedFiles[i]);
-		        image.style.width = '100px';
-		        image.style.height = '100px';
-		        image.style.objectFit = 'cover';
-		        image.style.objectPosition = 'center center';
-
+		       
+		        //save index image to get default image
+		        image.setAttribute('data-index', i); 
+				imageContainer.addEventListener('click', getDefaultImage);
 		        
 
 		        // Tạo nút xóa ảnh
@@ -118,36 +137,25 @@
 		        removeButton.className = 'remove-selected-image';
 		       	removeButton.innerHTML = '<i class="bi bi-x-square"></i>';
 		        removeButton.style.marginBottom = '-4px';
-
-		        // Xử lý sự kiện khi người dùng click nút xóa ảnh
-		        removeButton.addEventListener('click', () => {
-		            // Xóa khung chứa ảnh
-		            selectedImagesContainer.removeChild(imageContainer);
-
-		            // Xóa ảnh khỏi mảng
-		            const index = selectedFiles.indexOf(files[i]);
-		            if (index > -1) {
-		                selectedFiles.splice(index, 1);
-		            }
-		            //kiểm tra mảng chứa ảnh được chọn rỗng thì input nulls
-		            //if (selectedFiles.length === 0) {
-		              //  document.getElementById('file-input').value = null;
-		              //}
-		        });
-
-		        // Thêm nút xóa vào khung chứa
+				
+				// Thêm nút xóa vào khung chứa
 		        imageContainer.appendChild(removeButton);
 		     // Thêm ảnh vào khung chứa
 		        imageContainer.appendChild(image);
 				
 		        // Thêm khung chứa ảnh vào khung hiển thị ảnh đã chọn
 		        selectedImagesContainer.appendChild(imageContainer);
-		        
-		      //set lại số lượng file hiển thị trong input file
-			 // document.getElementById('file-input').textContent = files.length+" files";
-		    }
-		});
-		
+		        // Xử lý sự kiện khi người dùng click nút xóa ảnh
+		        removeButton.addEventListener('click', function(event){
+				
+		            selectedFiles.splice(i, 1);
+		           	fileInput.value = null;
+		            imageChange();
+		        });
+		      
+		    }	        
+		};
+	
 		//buttoon clear image
 		function clearImage() {
 			document.getElementById('file-input').value = null;
@@ -159,6 +167,67 @@
 			$("#file-input-error").text('');
 		}
 		
+		//xử lý thêm dữ liệu nếu edit
+		var url ;
+		var type;
+		$('#saveProduct').on('show.bs.modal', function (e) {
+                $("#id").val("");
+                $("#title").val("");
+                $("#price").val("");
+                $("#currentPrice").val("");
+                $("#description").val("");
+               $('input[name="inlineRadioOptions"]').prop('checked', false);
+                url="/product/add";
+                type="POST";
+                var button = e.relatedTarget;
+                var productId = $(button).data('id');
+               	var title =  $(button).parents('tr').find('.title').text();
+                var gender = $(button).parents('tr').find('.gender').text();
+                var price =  $(button).parents('tr').find('.price').text();
+                var currentPrice =  $(button).parents('tr').find('.currentPrice').text();
+                var description =  $(button).parents('tr').find('.description').text();
+               
+                if( typeof productId !== 'undefined'){
+                    
+                   url="/product/update";
+                   type="PUT";
+                  $("#title").html("Update product");
+                   $('#save-product-value').text('Update');
+                    document.getElementById('id').value =productId;
+                    document.getElementById('title').value = title;
+					document.getElementById('price').value = price;
+					document.getElementById('currentPrice').value = currentPrice;
+					if(gender=='Women'){
+						document.querySelector('input[name="inlineRadioOptions"][value="false"]').checked = true;
+					}else{
+						document.querySelector('input[name="inlineRadioOptions"][value="true"]').checked = true;
+					}
+					
+					document.getElementById('description').value = description;
+                    
+                    
+                  
+               }
+            
+           
+        });
+		//xử lí dữ liệu details product
+		$('#detailsProduct').on('show.bs.modal', function (e) {
+			var button = e.relatedTarget;
+			
+               $("#title-details").html($(button).parents('tr').find('.title').text());
+				$("#create-at-details").html($(button).parents('tr').find('.createAt').text());
+				$("#update-at-details").html($(button).parents('tr').find('.updateAt').text());
+				$("#category-details").html($(button).parents('tr').find('.category').text());
+				$("#size-details").html($(button).parents('tr').find('.size').text());
+				$("#color-details").html($(button).parents('tr').find('.color').text());
+				$("#gender-details").html($(button).parents('tr').find('.gender').text());
+				$("#price-details").html($(button).parents('tr').find('.price').text());
+                $("#current-price-details").html( $(button).parents('tr').find('.currentPrice').text());
+               $("#description-details").html( $(button).parents('tr').find('.description').text());
+              
+           
+        });
 		//save product
 		function saveProduct() {
 			
@@ -175,6 +244,18 @@
 		    for (let i = 0; i < selectedFiles.length; i++) {
 		        formData.append('file', selectedFiles[i]);
 		    }
+		    
+		    if(url=="/product/update"){
+				 formData.append('id', parseInt(document.getElementById('id').value));
+				
+			}
+		    //default image index
+		    if(defaultFileIndex!=null){
+				formData.append('defaultFileIndex', parseInt(defaultFileIndex));
+			}else{
+				formData.append('defaultFileIndex', 0);
+			}
+		    
 		    //set title
 		    formData.append('title', title);
 		    //set category
@@ -218,16 +299,17 @@
 		    formData.append('description', description);
 		
 		    $.ajax({
-		        url: "/product/add",
-		        type: "POST",
+		        url: url,
+		        type: type,
 		        contentType: false,
 		        processData: false,
 		        data: formData,
 		        dataType: 'json',
 		        cache: false,
 		        success: function(data) {
-					
 		        	alert(data.message);
+		        	clearFrom();
+		        	location.reload();
 		        },
 		        error: function(jqXHR, textStatus, errorMessage) {
 					 
@@ -281,3 +363,167 @@
 		
 		clearImage();
 	}
+	
+	 //DELETE Product
+		//set Product id for modal
+		$('#deleteProduct').on('show.bs.modal', function (e) {
+	                var button = e.relatedTarget;
+	               var productId = $(button).data('id');
+	                $('#productIdDeleteModal').val(productId);	               
+	                
+	   })
+	   //delete addtribute value when click button with id 'delete-attribute-value' in modal
+	   $(document).on("click","#delete-product-value",function(e) {
+		   var productId = document.getElementById("productIdDeleteModal").value;
+		
+		    $.ajax({
+		      url: '/product/delete?productId='+productId,
+		      type: 'DELETE',
+		      contentType: 'json',
+		      success: function(data) {
+		        // close modal
+		        $('#deleteProduct').modal('hide');
+		        //notice that the deletion was successful
+		        alert(data);
+		        //reload pagination
+		        loadData(currentPageForEditAndDelete);
+		      },
+		      error: function(jqXHR, textStatus, errorThrown){
+		    	  if (jqXHR.status === 400) {
+		    	        var error = jqXHR.responseJSON || jqXHR.responseText;
+		    	        $('#deleteProduct').modal('hide');
+		    	        alert(error)
+		    	        loadData(currentPageForEditAndDelete);
+		    	    } else {
+		    	        // xử lý lỗi khác
+		    	        console.log(textStatus);
+		    	        console.log(errorThrown);
+		    	    }
+		      }})
+	        });
+	        
+	var size;
+	//get current page to load page when delete or update a record
+	var currentPageForEditAndDelete;
+	$('table tbody').on('click', 'tr', function() {
+		var firstRow = $(this).closest('tbody').find('tr:first');
+		var startIndex = firstRow.children('td:first').text();
+		currentPageForEditAndDelete = Math.ceil((startIndex - 1) / size);
+	});
+	//get product page
+	 loadData(0);
+	 var imageNames = [] ;
+	const uploadDirectory = "src/main/resources/static/upload/";
+	function loadData(page) {
+			var table = "#product-table tbody";
+		    $.ajax({
+		      url: '/product/getProductPage',
+		      type: 'GET',
+		      dataType: 'json',
+		      data: {page : page},
+		      success: function(data) {
+		        //clear table
+		        $(table).empty();
+		
+		        //add record
+		        $.each(data.productResponseDtos, function(index, product) {
+		        	var row = $('<tr>');
+		            row.append($('<td>').text(data.currentPage * data.size + index+1));
+		            $.each(product.images, function(i,image) {
+						imageNames.push(product.images[i].inmageForSave);
+  						if (product.images[i].isDefault == true) {
+							  
+							  row.append(
+							  $('<td>').attr({
+							    'data-imageList': imageNames
+							  }).append(
+							    $('<img>').attr('src', "../upload/"+image.inmageForSave+"?v=1")
+							  ).addClass('default-img')
+							);
+				  		}
+				  	});
+		           row.append($('<td>').text(product.title).addClass('title'));
+		           row.append($('<td>').text(product.categoryName).addClass('category'));
+		           if(product.productAttributeValue!=null && product.productAttributeValue.size!=null && product.productAttributeValue.color!=null){
+					   
+					    row.append($('<td>').text(product.productAttributeValue.size).addClass('size').attr("data-size-id",product.productAttributeValue.sizeId));
+		           		row.append($('<td>').text(product.productAttributeValue.color).addClass('color').attr("data-size-id",product.productAttributeValue.colorId));
+				   }else if(product.productAttributeValue!=null && product.productAttributeValue.size!=null){
+					  
+					   row.append($('<td>').text(product.productAttributeValue.size).addClass('size').attr("data-size-id",product.productAttributeValue.sizeId));
+		           		row.append($('<td>').addClass('color'));
+				   }else if(product.productAttributeValue!=null && product.productAttributeValue.color!=null){
+					   
+					   row.append($('<td>').addClass('size'));
+		           		row.append($('<td>').text(product.productAttributeValue.color).addClass('color').attr("data-size-id",product.productAttributeValue.colorId));
+				   }else{
+					   row.append($('<td>').addClass('size'));
+					   row.append($('<td>').addClass('color'));
+				   }
+		          
+		            if(product.gender){
+						row.append($('<td>').text("Man").addClass('gender'));
+					}else{
+						row.append($('<td>').text("Women").addClass('gender'));
+					}
+		           // var formattedPrice = product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+		            row.append($('<td>').text(product.price).addClass('price'));
+		            row.append($('<td>').text(product.currentPrice).addClass('currentPrice'));
+		            row.append($('<td>').text(product.description).hide().addClass('description'));
+		            row.append($('<td>').text(product.createAt).hide().addClass('createAt'));
+		            row.append($('<td>').text(product.updateAt).hide().addClass('updateAt'));
+		            
+		            
+		            row.append($('<td>').addClass('details-button').html("<button data-bs-toggle='modal' data-bs-target='#detailsProduct'   class='btn' type='button'>Details</button>"));
+		            
+		            row.append($('<td>').attr({
+		            	'data-id': product.id,
+		                'data-bs-toggle': 'modal',
+		                'data-bs-target': '#saveProduct'
+		            }).addClass('text-primary').html('<i class="bi bi-pencil-square"></i>Edit'));
+		            
+		            row.append($('<td>').attr({
+		            	'data-id': product.id,
+		                'data-bs-toggle': 'modal',
+		                'data-bs-target': '#deleteProduct'
+		            }).addClass('text-danger').html('<i class="bi bi-trash"></i>Delete'));
+		            $(table).append(row);
+		        });
+		         pagination = '';
+		         currentPage = data.currentPage;
+		         totalPages = data.totalPages;
+		         size = data.size;
+		        //create pagination 
+		       createPagination("#paging",pagination,currentPage,totalPages );
+		      },
+		      error: function(){}})}
+	      
+	      
+	      //function to create pagination after call ajax
+	      function createPagination(navId,pagination,currentPage,totalPages ){
+	    	  $(navId).empty();
+	          
+	          pagination += '<ul class="pagination">';
+	          pagination += '<li ' + (currentPage > 0 ? '' : 'class="page-item disabled"') + '><a class="page-link" onclick="' + (currentPage > 0 ? 'loadData(' + (currentPage - 1) +')' : 'return false;') + '" aria-label="Previous"><span aria-hidden="true">&laquo;</span><span class="sr-only"></span></a></li>';
+
+	         
+	              var startPage = currentPage > 2 ? currentPage - 2 : 0;
+	              var endPage = currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1;
+
+	              for (var i = startPage; i <= endPage; i++) {
+	                  pagination += '<li ' + (currentPage === i ? 'class="page-item active"' : '') + '><a class="page-link" onclick="loadData(' + i +')">' + (i + 1) + '</a></li>';
+	              }
+	             //${page.totalPages > 5 && page.number < page.totalPages - 3}
+	              if ((totalPages > 5) &&  (currentPage < totalPages-3)) {
+	                  pagination += '<li class="page-item disabled"><a class="page-link" >...</a></li>';
+	              }
+	             
+	              if ((totalPages > 1) && (totalPages-1 != currentPage) && (totalPages-2 != currentPage) && (currentPage<totalPages-3)) {
+	                  pagination += '<li><a class="page-link" onclick="loadData(' + (totalPages - 1) +')" >' + totalPages + '</a></li>';
+	              }
+
+	          pagination += '<li ' + (currentPage < totalPages - 1 ? '' : 'class="page-item disabled"') + '><a class="page-link" onclick="' + (currentPage < totalPages - 1 ? 'loadData(' + (currentPage + 1) +')' : 'return false;') + '" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only"></span></a></li>';
+	          pagination += '</ul>';
+	           
+	           $(navId).append(pagination);
+	      }

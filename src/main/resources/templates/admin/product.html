@@ -62,71 +62,35 @@
 								</form>
 							</div>
 						</div>
-						<table class="table table-striped table-bordered table-image">
+						<table th:id ="product-table" class="table table-striped table-bordered table-image">
 							<thead>
 								<tr>
-									<th scope="col">#</th>
+									<th scope="col">Number</th>
 									<th scope="col">Image</th>
 									<th scope="col">Title</th>
-									<th scope="col">Product</th>
+									<th scope="col">Category</th>
+									<th scope="col">Size</th>
+									<th scope="col">Color</th>
+									<th scope="col">Gender</th>
 									<th scope="col">Price</th>
 									<th scope="col">Current price</th>
-									<th scope="col">Discount product</th>
-									<th scope="col">Gender</th>
-									<th scope="col">Description</th>
+									<th scope="col">Details</th>
+									<th scope="col">Edit</th>
+									<th scope="col">Delete</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<th scope="row">1</th>
-									<td class="w-25"><img
-										src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg"
-										class="img-fluid img-thumbnail" alt="Sheep" width="150">
-									</td>
-									<td>Áo</td>
-									<td>Mens</td>
-									<td>$100</td>
-									<td>$100</td>
-									<td>$100</td>
-									<td>Nam</td>
-									<td>Simple fashion</td>
-									<td><a href="" class="text-decoration-none"><i
-											class="bi bi-pencil-square"></i> Edit</a> <a href=""
-										class="text-decoration-none text-danger"><i
-											class="bi bi-trash"></i> Delete</a></td>
-								</tr>
-								<tr>
-									<th scope="row">2</th>
-									<td class="w-25"><img
-										src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-5.jpg"
-										class="img-fluid img-thumbnail" alt="Sheep" width="150"></td>
-									<td>Áo</td>
-									<td>Mens</td>
-									<td>$100</td>
-									<td>$100</td>
-									<td>$100</td>
-									<td>Nam</td>
-									<td>Simple fashion</td>
-									<td><a href="" class="text-decoration-none"><i
-											class="bi bi-pencil-square"></i> Edit</a> <a href=""
-										class="text-decoration-none text-danger"><i
-											class="bi bi-trash"></i> Delete</a></td>
-								</tr>
+								
 							</tbody>
 						</table>
-						<nav aria-label="Page navigation example">
-							<ul class="pagination justify-content-end">
-								<li class="page-item"><a class="page-link" href="#">Previous</a></li>
-								<li class="page-item"><a class="page-link" href="#">1</a></li>
-								<li class="page-item"><a class="page-link" href="#">2</a></li>
-								<li class="page-item"><a class="page-link" href="#">3</a></li>
-								<li class="page-item"><a class="page-link" href="#">Next</a></li>
-							</ul>
+						<nav th:id="paging">
+							
 						</nav>
-
+						<button class="btn" type="button" data-bs-toggle= "modal"
+		                data-bs-target="#saveProduct">Add</button>
 
 					</div>
-					<div class="tab-pane fade" id="nav-profile" role="tabpanel"
+				  <!-- <div class="tab-pane fade" id="nav-profile" role="tabpanel"
 						aria-labelledby="nav-profile-tab">
 						<div class="card">
 							<div class="card-header">
@@ -231,7 +195,7 @@
 
 										</div>
 										<small style="height:15px" th:id="file-input-error" class="text-danger form-text error"></small>
-										<div th:id ="selected-images" style="display: flex; flex-wrap: wrap;">
+										<div th:id ="selected-images">
 										</div>
 									</div>
 									
@@ -242,13 +206,218 @@
 								<button onclick="clearFrom()" class="btn btn-danger" type="button">Clear</button>
 								
 							</div>
-						</div>
-					</div>
+						</div>-->
+					</div> 
 				</div>
 			</div>
 		</div>
 	</div>
+	
+	<!-- Modal edit-->
+	<div class="modal fade" id="saveProduct" >
+	<div class="modal-dialog" style="max-width: 1000px;">
+	  <div class="modal-content">
+	   <div class="modal-header">
+	    <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
+	    <button th:class="close-edit" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+	   </div>
+	   <div class="modal-body">
+	   	
+	    	<div>
+				<div >
+					<div>
+						<h6>Product information:</h6>
+					</div>
+					<div >
+						<input th:id="id" type="text" class="d-none"> 
+						<div class="input-group row">
+							<b class="col-2">Title:</b>
+							<div class="col-7">
+								<input th:id="title" type="text" class="form-control"> 
+								<small style="height:15px" th:id="title-error" class="text-danger form-text error"></small>
+							</div>
+						</div>
+						<hr>
+						<div class="input-group row">
+							<b class="col-2">Category:</b>
+							<div class="col-7">
+								<select th:id="category" class="form-select"
+									aria-label="Default select example" onfocus="loadCategory()">
+									<option  value='' selected>Choose category</option>
+								</select> <small style="height:15px" th:id="category-error" class="text-danger form-text error"></small>
+							</div>
+						</div>
+						<hr>
+						<div class="input-group row">
+							<b class="col-2">Size:</b>
+							<div class="col-4">
+								<select th:id="sizeSelect" class="form-select"
+									aria-label="Default select example" onfocus="loadAttributeValue('size','sizeSelect')">
+									<option  value='' selected>Choose size</option>
+								</select> <small th:id="sizeSelect-error" class="text-danger form-text error"></small>
+							</div>
+							<b class="col-1">Color:</b>
+							<div class="col-4">
+								<select th:id="colorSelect" class="form-select scrollable-select"
+									aria-label="Default select example" onfocus="loadAttributeValue('color','colorSelect')">
+									<option  value='' selected>Choose color</option>
+								</select> <small th:id="colorSelect-error" class="text-danger form-text error"></small>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<b class="col-2">Price:</b>
+							<div class="col-7">
+								<div class="input-group">
+									<input th:id="price" type="text" class="form-control"> <span
+										class="input-group-text">$</span>
+										<small style="height:15px;" th:id="price-error" class="text-danger form-text error"></small>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<b class="col-2">Current Price:</b>
+							<div class="col-7">
+								<div class="input-group">
+									<input th:id="currentPrice" type="text" class="form-control"> <span
+										class="input-group-text">$</span>
+										<small style="height:15px" th:id="currentPrice-error" class="text-danger form-text error"></small>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="input-group row">
+							<b class="col-2">Gender:</b>
+							<div class="col-7">
+								<div  class="form-check form-check-inline">
+									<input class="form-check-input" type="radio"
+										name="inlineRadioOptions" id="inlineRadio1" value="true">
+									<label  class="form-check-label gender" for="inlineRadio1">Male</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input th:class ="gender"  class="form-check-input" type="radio"
+										name="inlineRadioOptions" id="inlineRadio2" value="false">
+									<label class="form-check-label" for="inlineRadio2">Female</label>
+								</div>
+								<br><small style="height:15px" th:id="gender-error" class="text-danger form-text error"></small>
+							</div>
+						</div>
+						<hr>
+						<div class="input-group row">
+							<b class="col-2">Description:</b>
+							<div class="col-7">
+								<textarea th:id="description" class="form-control" name=""
+									rows="3"></textarea>
+								<small style="height:15px" th:id="description-error" class="text-danger form-text error"></small>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<b class="col-2">Image:</b>
+							<div class="col-7">
+								<div class="input-group">
+									<input type="file" class="form-control"
+										placeholder="Recipient's username"
+										aria-label="Recipient's username"
+										aria-describedby="button-addon2" th:id="file-input"
+										 multiple>
+									<button class="btn btn-danger" type="button"
+										onclick="clearImage()" id="button-addon2">Clear</button>
 
+								</div>
+								<small style="height:15px" th:id="file-input-error" class="text-danger form-text error"></small>
+								<div th:id ="selected-images">
+								</div>
+							</div>
+							
+						</div>
+						
+						
+				
+						
+						
+					</div>
+				</div>
+			</div>
+	  </div>
+	  <div class="modal-footer">
+	   <button th:class="close-edit" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+	   <button onclick="clearFrom()" class="btn btn-danger" type="button">Clear</button>
+	    <button type="button" class="btn bg-primary" th:id="save-product-value"  onclick="saveProduct()">Add</button>
+	   </div>
+	  </div>
+	 </div>
+	</div> 
+	
+	<!-- Modal delete-->
+	<div class="modal fade" id="deleteProduct">
+	 <div class="modal-dialog">
+	  <div class="modal-content">
+	   <div class="modal-header">
+	    <h5 class="modal-title" id="exampleModalLabel">Delete Product</h5>
+	    <button th:class="close-delete" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+	   </div>
+	   <div class="modal-body">
+	    <p>Are you sure you want to product?</p>
+	    <input type="hidden" th:id="productIdDeleteModal" name="productId">
+	 
+	  </div>
+	  <div class="modal-footer">
+	   <button th:class="close-delete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+	    <button type="button" class="btn btn-danger" th:id="delete-product-value">Delete</button>
+	   </div>
+	  </div>
+	 </div>
+	</div>
+	
+	<!-- Modal detalis-->
+	<div class="modal fade" id="detailsProduct">
+	 <div class="modal-dialog" style="max-width: 700px;">
+	  <div class="modal-content">
+	   <div class="modal-header">
+	    <h5 class="modal-title color" id="exampleModalLabel">Product Details</h5>
+	    <button th:class="close-delete" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+	   </div>
+	   <div class="modal-body">
+	    <div class="container">
+		   
+		    <div class="row">
+		      <div class="col-md-12">
+		        <p><strong>Title:</strong> <span th:id="title-details"></span></p>
+		        <div class="d-flex">
+			        <p class="col-md-6"><strong class ="color">Price:</strong> <span th:id="price-details"></span></p>
+			        <p><strong>Current price:</strong> <span th:id="current-price-details"></span></p>
+		        </div>
+		         <div class="d-flex">
+			        <p class="col-md-6"><strong>Create at:</strong> <span th:id="create-at-details"></span></p>
+			        <p><strong>Update at:</strong> <span th:id="update-at-details"></span></p>
+		        </div>
+		         <div class="d-flex">
+			        <p class="col-md-6"><strong>Category:</strong> <span th:id="category-details"></span></p>
+			        <p><strong>Gender:</strong> <span th:id="gender-details"></span></p>
+		        </div>
+		         <div class="d-flex">
+			        <p class="col-md-6"><strong>Size:</strong> <span th:id="size-details"></span></p>
+			        <p><strong>Color:</strong> <span th:id="color-details"></span></p>
+		       </div>
+		       
+		      </div>
+		      <div class="col-md-12">
+		        <p><strong>Description:</strong></p>
+		        <p th:id="description-details"></p>
+		      </div>
+		    </div>
+		  </div>
+	  </div>
+	  <div class="modal-footer">
+	   <button th:class="close-delete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	   
+	   </div>
+	  </div>
+	 </div>
+	</div>
+	
 	<script
 		src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
 		integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"

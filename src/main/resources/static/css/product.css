@@ -1,8 +1,80 @@
-@charset "UTF-8";
+#selected-images{
+	margin-top: 20px;
+	display: flex; 
+	flex-wrap: wrap;
+}
+.selected-image .overlay-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  padding: 15px 10px;
+  border-radius: 4px;
+  transition: opacity 0.3s ease;
+}
+.selected-image {
+  position: relative;
+  margin-right:10px;
+}
+.selected-image::after {
+  content: "Click to set default image";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  padding: 45px 10px;
+  border-radius: 5px;
+  opacity: 0;
+  font-size: 14px;
+  transition: opacity 0.3s ease;
+   width: 100%;
+  height: 100%;
+   text-align: center;
+   z-index: 1; 
+}
+.selected-image:hover::after {
+  opacity: 1;
+}
+.selected-image:hover img {
+  filter: brightness(50%);
+}
+.selected-image img {
+  transition: filter 0.3s ease;
+  width :100px;
+  height :100px;
+  object-fit : cover;
+  object-position : center center;
+}
 
+.remove-selected-image{
+	position: relative;
+	z-index: 2; 
+}
 
+.hidden{
+ 	display: none;
+}
 
+.default-img  img{
+  width :100px;
+  height :80px;
+  object-fit : cover;
+  object-position : center center;
+}
 
+.details-button button{
+	background-color:  #293a6c;
+	color: white;
+}
 
+.modal-dialog-custom{
+	max-width:1000px;
+	width:900px;
+}
 
-
+.colorTitle{
+	color: #293a6c !important;
+}

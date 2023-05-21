@@ -44,9 +44,6 @@ public class Product {
 	private Float currentPrice;
 	
 	@Column(nullable = false)
-	private boolean discountProduct = false;
-	
-	@Column(nullable = false)
 	private boolean gender;
 	
 	@Column(nullable = false, length = 1500)
