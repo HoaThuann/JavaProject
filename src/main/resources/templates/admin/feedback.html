@@ -50,7 +50,7 @@
 								</form>
 							</div>
 						</div>
-						<table class="table table-bordered" width="100%" cellspacing="0">
+						<table th:id="feedback-table" class="table table-bordered" width="100%" cellspacing="0">
 							<thead>
 								<tr>
 									<th>STT</th>
@@ -77,7 +77,8 @@
 									<td>2023-05-09</td>
 									<td><a href="feedbackDetail" class="btn btn-success"><i
 											class="bi bi-eye-fill"></i></a> <a href="" class="btn btn-danger"><i
-											class="bi bi-trash-fill"></i></a>
+											class="bi bi-trash-fill"></i></a></td>
+								</tr>
 							</tbody>
 						</table>
 						<nav aria-label="Page navigation example">
@@ -103,5 +104,62 @@
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
 		integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
 		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		var size;
+		//get current page to load page when delete or update a record
+		var currentPageForEditAndDelete;
+		$('table tbody').on('click', 'tr', function() {
+			var firstRow = $(this).closest('tbody').find('tr:first');
+			var startIndex = firstRow.children('td:first').text();
+			currentPageForEditAndDelete = Math.ceil((startIndex - 1) / size);
+		});
+		//get data for table for first
+
+		loadData(0);
+		
+		//get data for table
+		function loadData(page) {
+			var table = "#feedback-table tbody";
+		    $.ajax({
+		      url: '/feedback/getUserPage',
+		      type: 'GET',
+		      dataType: 'json',
+		      data: {page : page},
+		      success: function(data) {
+		        //clear table
+		        $(table).empty();
+		
+		        //add record
+		        $.each(data.userResponseDtos, function(index, user) {
+		        	var row = $('<tr>');
+		            row.append($('<td>').text(data.currentPage * data.size + index+1));
+		            row.append($('<td>').attr('fullname','fullname').text(user.fullName));
+		            row.append($('<td>').attr('email','email').text(user.email));
+		            row.append($('<td>').attr('phone','phone').text(user.phone));
+		            row.append($('<td>').attr('address','address').text(user.address));
+		            row.append($('<td>').attr('roleName','roleName').text(user.roleName));
+		            
+		            row.append($('<td>').attr({
+		            	'data-id': user.id,
+		                'data-bs-toggle': 'modal',
+		                'data-bs-target': '#editUser'
+		            }).addClass('text-primary').html('<i class="bi bi-pencil-square"></i>Set Role'));
+		            
+		            row.append($('<td>').attr({
+		            	'data-id': user.id,
+		                'data-bs-toggle': 'modal',
+		                'data-bs-target': '#deleteUser'
+		            }).addClass('text-danger').html('<i class="bi bi-trash"></i>Delete'));
+		            $(table).append(row);
+		        });
+		         pagination = '';
+		         currentPage = data.currentPage;
+		         totalPages = data.totalPages;
+		         size = data.size;
+		        //create pagination 
+		       createPagination("#paging",pagination,currentPage,totalPages );
+		      },
+		      error: function(){}})}
+	</script>
 </body>
 </html>
