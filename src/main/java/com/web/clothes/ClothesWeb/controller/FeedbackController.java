@@ -23,7 +23,7 @@ public class FeedbackController {
 	@Autowired
 	private FeedbackService feedbackService;
 
-	@RequestMapping("feedback")
+	@RequestMapping("/view")
 	public String feedbackView() {
 		return "admin/feedback";
 	}
