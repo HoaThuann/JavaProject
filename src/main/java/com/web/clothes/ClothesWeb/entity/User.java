@@ -41,17 +41,17 @@ public class User {
 	@Column(nullable = false, length = 60)
 	private String fullName;
 
-	@Column(nullable = false, unique = true, length = 60)
+	@Column(nullable = false, length = 60)
 	private String userName;
 
 	@Column(nullable = false, length = 60)
 	private String password;
 
 	@Email
-	@Column(nullable = false, unique = true, length = 60)
+	@Column(nullable = false,  length = 60)
 	private String email;
 
-	@Column(nullable = false, unique = true, length = 11)
+	@Column(nullable = false, length = 11)
 	private String phone;
 
 	@Column(nullable = true, length = 100)

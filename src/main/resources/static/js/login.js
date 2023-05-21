@@ -1,4 +1,4 @@
-const loginForm = document.getElementById('login-form');
+	const loginForm = document.getElementById('login-form');
 		const emailInput = document.getElementById('email-input');
 		const passwordInput = document.getElementById('password-input');
 		const emailError =document.getElementById('email-error');

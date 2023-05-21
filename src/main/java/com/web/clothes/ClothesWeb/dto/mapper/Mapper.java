@@ -46,11 +46,16 @@ public class Mapper {
 	
 	public Product productRequestDtoToProduct(ProductRequestDto productRequestDto) {
 		Product product = new Product();
+		if(productRequestDto.getId()!=null) {
+			product.setId(productRequestDto.getId());
+		}
+		
+		
 		//set title
 		product.setTitle(productRequestDto.getTitle());
 		
 		//set category
-		Optional<Category> category = categoryService.getCategory(productRequestDto.getCategoryId());
+		Optional<Category> category = categoryService.getCategory(productRequestDto.getCategory());
 		product.setCategory(category.get());
 		
 		//set price
@@ -59,12 +64,11 @@ public class Mapper {
 		//set current price
 		if( productRequestDto.getCurrentPrice()!=0) {
 		product.setCurrentPrice(productRequestDto.getCurrentPrice());
-		product.setDiscountProduct(true);
 		}
 		
 		
 		//set gender
-		product.setGender(productRequestDto.isGender());
+		product.setGender(Boolean.parseBoolean(productRequestDto.getGender()));
 		
 //		//set size
 //		Optional<AttributeValue> size = attributeValueService.getAttributeValue(productRequestDto.getSizeAttributeValue());

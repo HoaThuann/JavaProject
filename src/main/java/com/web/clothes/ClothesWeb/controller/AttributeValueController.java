@@ -138,7 +138,7 @@ public class AttributeValueController {
 		
 		// check if Attribute value is exist
 		Optional<AttributeValue> attributeValueById = attributeValueService.getAttributeValue(attributeValueId);
-		if (attributeValueById.isEmpty()) {
+		if (attributeValueById.isEmpty() || attributeValueById.get().getDeleteAt()!=null) {
 			
 			return ResponseEntity.badRequest().body("Attribute value is not exist! Delete failse!");
 		}
@@ -160,16 +160,8 @@ public class AttributeValueController {
 			@RequestParam(defaultValue = "8") int size, @RequestParam(defaultValue = "0") int page,
 			@RequestParam String attributeName) {
 
-		Page<AttributeValue> attributeValuePage = attributeValueService.getAttributeValueByAttribute(page, size,
-				attributeName);
-		List<AttributeValueResponseDto> attributeValueResponseDto = attributeValuePage.stream()
-				.map(attributeValue -> new AttributeValueResponseDto(attributeValue.getId(),
-						attributeValue.getAttributeValueName()))
-				.collect(Collectors.toList());
-		
-		AttributeValuePageResponseDto attributeValuePageResponseDto = new AttributeValuePageResponseDto(
-				attributeValuePage.getTotalPages(), attributeValuePage.getNumber(), attributeValuePage.getSize(),
-				attributeValueResponseDto);
+		AttributeValuePageResponseDto attributeValuePageResponseDto = attributeValueService.getAttributeValueByAttribute(page, size, attributeName);
+
 		return ResponseEntity.ok(attributeValuePageResponseDto);
 
 	}

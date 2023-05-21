@@ -130,8 +130,7 @@
 	      	        }
 	      	    } else {
 	      	        // xử lý lỗi khác
-	      	        console.log(textStatus);
-	      	        console.log(errorThrown);
+	      	       alert("erorr");
 	      	    }
 	        }})}	
 	  	

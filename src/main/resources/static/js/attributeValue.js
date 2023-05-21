@@ -195,36 +195,40 @@
 	      dataType: 'json',
 	      data: {page : page,attributeName : attributeName},
 	      success: function(data) {
-	        //clear table
-	        $(table).empty();
+			  //clear table
+	       	 $(table).empty();
+			  if(data!=null){
+				   //add record
+			        $.each(data.attributeValueResponseDto, function(index, attributeValue) {
+			        	var row = $('<tr>');
+			            row.append($('<td>').text(data.currentPage * data.size + index+1));
+			            row.append($('<td>').attr('name','name').text(attributeValue.name));
+			            
+			            row.append($('<td>').attr({
+			            	'data-id': attributeValue.id,
+			            	'data-attribute-name': attributeName,
+			                'data-bs-toggle': 'modal',
+			                'data-bs-target': '#editAttributeValue'
+			            }).addClass('text-primary').html('<i class="bi bi-pencil-square"></i>Edit'));
+			            
+			            row.append($('<td>').attr({
+			            	'data-id': attributeValue.id,
+			            	'data-attribute': attributeName,
+			                'data-bs-toggle': 'modal',
+			                'data-bs-target': '#deleteAttributeValue'
+			            }).addClass('text-danger').html('<i class="bi bi-trash"></i>Delete'));
+			            $(table).append(row);
+			        });
+			         pagination = '';
+			         currentPage = data.currentPage;
+			         totalPages = data.totalPages;
+			         size = data.size;
+			        //create pagination 
+			       createPagination("#"+attributeName+"-paging",attributeName,pagination,currentPage,totalPages );
+			  }
+	        
 	
-	        //add record
-	        $.each(data.attributeValueResponseDto, function(index, attributeValue) {
-	        	var row = $('<tr>');
-	            row.append($('<td>').text(data.currentPage * data.size + index+1));
-	            row.append($('<td>').attr('name','name').text(attributeValue.name));
-	            
-	            row.append($('<td>').attr({
-	            	'data-id': attributeValue.id,
-	            	'data-attribute-name': attributeName,
-	                'data-bs-toggle': 'modal',
-	                'data-bs-target': '#editAttributeValue'
-	            }).addClass('text-primary').html('<i class="bi bi-pencil-square"></i>Edit'));
-	            
-	            row.append($('<td>').attr({
-	            	'data-id': attributeValue.id,
-	            	'data-attribute': attributeName,
-	                'data-bs-toggle': 'modal',
-	                'data-bs-target': '#deleteAttributeValue'
-	            }).addClass('text-danger').html('<i class="bi bi-trash"></i>Delete'));
-	            $(table).append(row);
-	        });
-	         pagination = '';
-	         currentPage = data.currentPage;
-	         totalPages = data.totalPages;
-	         size = data.size;
-	        //create pagination 
-	       createPagination("#"+attributeName+"-paging",attributeName,pagination,currentPage,totalPages );
+	       
 	      },
 	      error: function(){}})}
       

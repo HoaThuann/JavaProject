@@ -47,10 +47,9 @@ public class CategoryController {
 	public ResponseEntity<?> addCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto,
 			BindingResult bindingResult) {
 		Map<String, Object> errors = new HashMap<>();
-		System.out.println(categoryRequestDto.getCategoryName());
+		
 		// validate input data
 		if (bindingResult.hasErrors()) {
-			System.out.println("1");
 			errors.put("bindingErrors", bindingResult.getAllErrors());
 		}
 	
@@ -59,7 +58,6 @@ public class CategoryController {
 				.findCategoryByName(categoryRequestDto.getCategoryName().trim());
 		//if name is exits and it has deleted =0 && categoryByName.get().getDeleted()==0
 		if (categoryByName.isPresent() ) {
-			System.out.println("2");
 			errors.put("categoryExist", "Category already exists! Please enter a new one!");
 		}
 
@@ -81,11 +79,9 @@ public class CategoryController {
 	public ResponseEntity<?> updateCategory(@RequestParam Integer categoryId,
 			@Valid @RequestBody CategoryRequestDto categoryRequestDto, BindingResult bindingResult) {
 
-		
 		Map<String, Object> errors = new HashMap<>();
 		// validate input data
 		if (bindingResult.hasErrors()) {
-			
 			errors.put("bindingErrors", bindingResult.getAllErrors());
 			return ResponseEntity.badRequest().body(errors);
 		}
@@ -122,7 +118,7 @@ public class CategoryController {
 		
 		// check if category is exist
 		Optional<Category> categoryById = categoryService.getCategory(categoryId);
-		if (categoryById.isEmpty()) {
+		if (categoryById.isEmpty() || categoryById.get().getDeleteAt()!=null) {
 			return ResponseEntity.badRequest().body("Category is not exist! Delete failse!");
 		}
 		
@@ -160,20 +156,14 @@ public class CategoryController {
 	
 	//return view category
 		@GetMapping(value = "/getAll")
-		public ResponseEntity<?> getAllCategory(String a) {
+		public ResponseEntity<?> getAllCategory() {
 			List<Category> categories = categoryService.getAll();
 			
 			List<CategoryResponseDto> categoryResponseDtos = categories.stream()
 					.map(category -> new CategoryResponseDto(category.getId(),
 							category.getCategoryName()))
 					.collect(Collectors.toList());
-			
-			for (CategoryResponseDto category2 : categoryResponseDtos) {
-				System.out.println(category2.getName());
-			}
-			if(categoryResponseDtos.isEmpty()) {
-				return ResponseEntity.badRequest().body("list rỗng");
-			}
+
 			return ResponseEntity.ok(categoryResponseDtos);
 		}
 
