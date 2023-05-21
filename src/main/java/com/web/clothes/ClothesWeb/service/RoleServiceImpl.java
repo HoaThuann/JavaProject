@@ -1,8 +1,8 @@
 package com.web.clothes.ClothesWeb.service;
 
+import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
 
 import org.springframework.stereotype.Service;
 
@@ -21,5 +21,17 @@ public class RoleServiceImpl implements RoleService{
         Optional<Role> role = roleRespository.findRoleByRoleName(roleName);
         return role;
     }
+
+	@Override
+	public List<Role> getAll() {
+		List<Role> roles = roleRespository.findAll();
+		return roles;
+	}
+
+	@Override
+	public Optional<Role> getRole(Integer roleId) {
+		Optional<Role> role = roleRespository.getRoleById(roleId);
+		return role;
+	}
 
 }

@@ -10,40 +10,66 @@
 		</a>
 		<ul class="nav nav-pills flex-column " id="menu">
 			<li><a href="oder.html"
-				class="nav-link px-0 align-middle text-white"> <i
-					class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Orders</span></a>
-			</li>
+				class="nav-link align-middle text-white align-items-center rounded collapsed"
+				data-bs-toggle="collapse" data-bs-target="#dashboard-collapse-oder"
+				aria-expanded="false"> <i class="fs-4 bi-table"></i> <span
+					class="ms-1 d-none d-sm-inline">Orders</span>
+			</a>
+				<div class="collapse" id="dashboard-collapse-oder">
+					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+						<li><a href="AllOders.html"
+							class="nav-link text-warning kt-menu"><i
+								class="bi bi-caret-right-fill"></i> <span
+								class="d-none d-sm-inline">All orders</span> </a></li>
+						<li><a href="History_Oder.html"
+							class="nav-link text-warning kt-menu"> <i
+								class="bi bi-caret-right-fill"></i><span
+								class="d-none d-sm-inline">Order History </span>
+						</a></li>
+						<li><a href="Unconfirmed_Oder.html"
+							class="nav-link text-warning kt-menu"><i
+								class="bi bi-caret-right-fill"></i> <span
+								class="d-none d-sm-inline">Unconfirmed </span> </a></li>
+						<li><a href="Confirmed_Oder.html"
+							class="nav-link text-warning kt-menu"><i
+								class="bi bi-caret-right-fill"></i> <span
+								class="d-none d-sm-inline">Confirmed</span> </a></li>
+					</ul>
+				</div></li>
 
 			<li><a href=""
-				class="nav-link px-0 align-middle text-white align-items-center rounded collapsed"
+				class="nav-link align-middle text-white align-items-center rounded collapsed"
 				data-bs-toggle="collapse" data-bs-target="#dashboard-collapse"
 				aria-expanded="false"> <i class="fs-4 bi-grid"></i> <span
 					class="ms-1 d-none d-sm-inline">Products</span>
 			</a>
 				<div class="collapse" id="dashboard-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><a href="newCategory.html" class="nav-link  text-warning"><i
+						<li><a href="newCategory.html"
+							class="nav-link text-warning kt-menu"><i
 								class="bi bi-caret-right-fill"></i> <span
 								class="d-none d-sm-inline">Category</span> </a></li>
-						<li><a href="attributes.html" class="nav-link text-warning">
-								<i class="bi bi-caret-right-fill"></i><span
+						<li><a href="attributes.html"
+							class="nav-link text-warning kt-menu"> <i
+								class="bi bi-caret-right-fill"></i><span
 								class="d-none d-sm-inline">Attribiutes</span>
 						</a></li>
-						<li><a href="newProduct.html" class="nav-link text-warning"><i
+						<li><a href="newProduct.html"
+							class="nav-link text-warning kt-menu"><i
 								class="bi bi-caret-right-fill"></i> <span
 								class="d-none d-sm-inline">Product</span> </a></li>
 					</ul>
 				</div></li>
 			<li><a href="user.html"
-				class="nav-link px-0 align-middle text-white"> <i
-					class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">User</span>
+				class="nav-link  align-middle text-white"> <i
+					class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Users</span>
 			</a></li>
-			<li><a href="#" class="nav-link px-0 align-middle text-white">
-					<i class="fs-4 bi bi-pencil-square"></i> <span
+			<li><a href="#" class="nav-link  align-middle text-white"> <i
+					class="fs-4 bi bi-pencil-square"></i> <span
 					class="ms-1 d-none d-sm-inline">Report</span>
 			</a></li>
 			<li><a href="feedback.html"
-				class="nav-link px-0 align-middle text-white"> <i
+				class="nav-link  align-middle text-white"> <i
 					class="fs-4 bi-chat-text-fill"></i> <span
 					class="ms-1 d-none d-sm-inline">Feedback</span>
 			</a></li>
